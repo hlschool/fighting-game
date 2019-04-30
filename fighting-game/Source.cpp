@@ -4,10 +4,11 @@ and may not be redistributed without written permission.*/
 //Using SDL and standard IO
 #include <SDL.h>
 #include <stdio.h>
+#include "vector.h"
 
 //Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+const int width = 640;
+const int height = 480;
 
 int main(int argc, char* args[])
 {
@@ -17,6 +18,15 @@ int main(int argc, char* args[])
 	//The surface contained by the window
 	SDL_Surface* screenSurface = NULL;
 
+	SDL_Renderer* gRenderer = NULL;
+
+	const vector grav_acc = { 0, 0.00001 };
+
+	vector pos = { width / 4, 0 };
+	vector vel = { 0, 0 };
+	vector acc = grav_acc;
+
+
 	//Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
@@ -25,7 +35,7 @@ int main(int argc, char* args[])
 	else
 	{
 		//Create window
-		window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
 		if (window == NULL)
 		{
 			printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -35,14 +45,49 @@ int main(int argc, char* args[])
 			//Get window surface
 			screenSurface = SDL_GetWindowSurface(window);
 
-			//Fill the surface white
-			SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
+			gRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-			//Update the surface
-			SDL_UpdateWindowSurface(window);
+			SDL_Rect backRect = { 0, 0, width, height };
+			SDL_SetRenderDrawColor(gRenderer, 90, 90, 90, 0xFF);
+			SDL_RenderFillRect(gRenderer, &backRect);
 
-			//Wait two seconds
-			SDL_Delay(2000);
+			SDL_Rect fillRect = { pos.x, pos.y, width / 2, height / 2 };
+			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+			SDL_RenderFillRect(gRenderer, &fillRect);
+
+
+			SDL_Event evt;
+			bool programrunning = true;
+			while (programrunning)
+			{
+
+				while (SDL_PollEvent(&evt)) {
+					if (evt.type == SDL_QUIT)
+						programrunning = false;
+					else if (evt.type == SDL_MOUSEBUTTONDOWN) {
+						if (evt.button.button == SDL_BUTTON_LEFT) {
+							acc.x += 0.01;
+						}
+						
+					}
+				}
+
+				pos += vel;
+				vel += acc;
+				acc = grav_acc;
+
+				SDL_SetRenderDrawColor(gRenderer, 90, 90, 90, 0xFF);
+				SDL_RenderFillRect(gRenderer, &backRect);
+
+				fillRect.x = pos.x;
+				fillRect.y = pos.y;
+				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+				SDL_RenderFillRect(gRenderer, &fillRect);
+
+				//Update the surface
+				SDL_RenderPresent(gRenderer);
+				
+			}
 		}
 	}
 
