@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fighting-game", "fighting-game\fighting-game.vcxproj", "{81D74328-2CB7-4DFC-9A1A-8EACDE585F3D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fighting-game", "fighting-game\fighting-game.vcxproj", "{B4D31D2E-5081-4DA7-9665-ABB67E910FDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{81D74328-2CB7-4DFC-9A1A-8EACDE585F3D}.Debug|x64.ActiveCfg = Debug|x64
-		{81D74328-2CB7-4DFC-9A1A-8EACDE585F3D}.Debug|x64.Build.0 = Debug|x64
-		{81D74328-2CB7-4DFC-9A1A-8EACDE585F3D}.Debug|x86.ActiveCfg = Debug|Win32
-		{81D74328-2CB7-4DFC-9A1A-8EACDE585F3D}.Debug|x86.Build.0 = Debug|Win32
-		{81D74328-2CB7-4DFC-9A1A-8EACDE585F3D}.Release|x64.ActiveCfg = Release|x64
-		{81D74328-2CB7-4DFC-9A1A-8EACDE585F3D}.Release|x64.Build.0 = Release|x64
-		{81D74328-2CB7-4DFC-9A1A-8EACDE585F3D}.Release|x86.ActiveCfg = Release|Win32
-		{81D74328-2CB7-4DFC-9A1A-8EACDE585F3D}.Release|x86.Build.0 = Release|Win32
+		{B4D31D2E-5081-4DA7-9665-ABB67E910FDF}.Debug|x64.ActiveCfg = Debug|x64
+		{B4D31D2E-5081-4DA7-9665-ABB67E910FDF}.Debug|x64.Build.0 = Debug|x64
+		{B4D31D2E-5081-4DA7-9665-ABB67E910FDF}.Debug|x86.ActiveCfg = Debug|Win32
+		{B4D31D2E-5081-4DA7-9665-ABB67E910FDF}.Debug|x86.Build.0 = Debug|Win32
+		{B4D31D2E-5081-4DA7-9665-ABB67E910FDF}.Release|x64.ActiveCfg = Release|x64
+		{B4D31D2E-5081-4DA7-9665-ABB67E910FDF}.Release|x64.Build.0 = Release|x64
+		{B4D31D2E-5081-4DA7-9665-ABB67E910FDF}.Release|x86.ActiveCfg = Release|Win32
+		{B4D31D2E-5081-4DA7-9665-ABB67E910FDF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
