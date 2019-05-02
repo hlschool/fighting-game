@@ -15,13 +15,13 @@ and may not be redistributed without written permission.*/
 using namespace std;
 
 //Screen dimension constants
-const int width = 640;
-const int height = 480;
+const int width = 1080;
+const int height = 720;
 
 const int fps_lock = 60;
 const double spf = 1 / (double)fps_lock;
 
-const vector grav_acc = { 0, 0.1 };
+const vector grav_acc = { 0, 0.2 };
 
 const SDL_Color white = { 255, 255, 255 };
 
@@ -32,8 +32,6 @@ int main(int argc, char* args[])
 
 	//The renderer which draws shapes
 	SDL_Renderer* gRenderer = NULL;
-
-	const vector grav_acc = { 0, 0.1 };
 
 	int frames = 0;
 	int fps_count = 0;
@@ -56,18 +54,23 @@ int main(int argc, char* args[])
 			//Creating renderer...
 			gRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-
 			//background rectangle
 			rectangle background = { width, height };
 			background.setColor(70, 70, 70);
 
-			rectangle *r = new rectangle(width / 2, height / 2);
-			r->moveTo({ width / 4, height / 4 });
+			rectangle *r = new rectangle(250, 250);
+			r->moveTo({ (width / 2) - (float)(r->w / 2) , 0 });
+
+			rectangle *floor = new rectangle(width, 70);
+			floor->fixed = true;
+			floor->setColor(35, 35, 35);
+			floor->moveTo({ 0, 650 });
 
 			field playing_field;
 			playing_field.setBackground(background);
 			playing_field.setGravity(grav_acc);
 			playing_field.add(r);
+			playing_field.add(floor);
 
 			TTF_Init();
 			TTF_Font* Sans = TTF_OpenFont("OpenSans-Bold.ttf", 24);
@@ -86,7 +89,7 @@ int main(int argc, char* args[])
 					else if (evt.type == SDL_KEYDOWN) {
 						if (evt.key.keysym.sym == SDLK_SPACE) {
 							if(evt.key.repeat == 0) {
-								cout << "keypress";
+								r->push({ 0, -6 });
 							}
 							
 						}
@@ -95,6 +98,11 @@ int main(int argc, char* args[])
 				}
 				
 				playing_field.update();
+				if (r->collidesWith(*floor, nullptr, nullptr)) {
+					r->setColor(255, 0, 0);
+				} else {
+					r->setColor(255, 255, 255);
+				}
 				playing_field.draw(gRenderer);
 
 				//FPS counter
@@ -120,7 +128,6 @@ int main(int argc, char* args[])
 				chrono::nanoseconds elapsed = finish - start;
 				double elapsed_s = elapsed.count() * 1E-9;
 				fps_count = 1 / elapsed_s;
-				//cout << fps_count << endl;
 				
 			}
 		}

@@ -10,13 +10,15 @@ public:
 	vector vel = { 0, 0 };
 	vector acc = { 0, 0 };
 
+	int w, h;
+
 	bool fixed = false;
 
 	void push(const vector&);
 	void move(const vector&);
 	void moveTo(const vector&);
 	
-	virtual bool collidesWith(const obj&, vector*) = 0;
+	virtual bool collidesWith(const obj&, vector*, vector*) = 0;
 	virtual void update() = 0;
 	virtual void draw(SDL_Renderer*) = 0;
 

@@ -27,6 +27,18 @@ void field::update() {
 	for (int i = 0; i < objects(); i++) {
 		l->get(i)->push(gravity);
 		l->get(i)->update();
+		for (int j = 0; j < objects(); j++) {
+			if (j != i) {
+				if (l->get(i)->collidesWith(*l->get(j), nullptr, nullptr)) {
+					cout << "wow";
+				}
+				vector *normal = new vector(0, 0);
+				vector *move = new vector(0, 0);
+				l->get(i)->collidesWith(*l->get(j), normal, move);
+				l->get(i)->push(*normal);
+				l->get(i)->move(*move);
+			}
+		}
 	}
 }
 

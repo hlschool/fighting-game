@@ -5,14 +5,12 @@
 
 class rectangle : public obj {
 public:
-	int w;
-	int h;
 
 	int r = 255;
 	int g = 255; 
 	int b = 255;
 
-	bool collidesWith(const obj&, vector*);
+	bool collidesWith(const obj&, vector*, vector*);
 	void update();
 
 	void setColor(int, int, int);
