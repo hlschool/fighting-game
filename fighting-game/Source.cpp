@@ -2,6 +2,7 @@
 and may not be redistributed without written permission.*/
 
 //Using SDL and standard IO
+//hey guys this is my first try -jim
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <stdio.h>
