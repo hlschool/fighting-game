@@ -70,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>$(SolutionDir)lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
     <IncludePath>$(SolutionDir)\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
