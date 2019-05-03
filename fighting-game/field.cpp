@@ -45,3 +45,5 @@ void field::draw(SDL_Renderer* renderer) {
 		l->get(i)->draw(renderer);
 	}
 }
+
+//k: hello
