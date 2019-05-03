@@ -24,7 +24,7 @@ const double spf = 1 / (double)fps_lock;
 
 const vector grav_acc = { 0, 0.2 };
 
-const SDL_Color white = { 255, 255, 255 };
+const SDL_Color white = { 255, 255, 255 }; //asdasdasdasdasdasdasdasdasdasdassdfgdfgfdgdfgdefjgldisfjhglksdjfhgldksjfhglkjdsfhgkdjshlgkjsdlhksdjfhlgkj
 
 int main(int argc, char* args[])
 {
