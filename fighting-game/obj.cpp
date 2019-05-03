@@ -9,7 +9,9 @@ void obj::push(const vector& force) {
 }
 
 void obj::move(const vector& v) {
-	pos += v;
+	if (!fixed) {
+		pos += v;
+	}
 }
 
 void obj::moveTo(const vector& v) {
