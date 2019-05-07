@@ -13,6 +13,7 @@ and may not be redistributed without written permission.*/
 #include "vector.h"
 #include "rectangle.h"
 #include "field.h"
+#include "platform.h"
 using namespace std;
 
 //Screen dimension constants
@@ -67,11 +68,17 @@ int main(int argc, char* args[])
 			floor->setColor(35, 35, 35);
 			floor->moveTo({ 0, 650 });
 
+			platform *pl1 = new platform(250, 100);
+			pl1->fixed = true;
+			pl1->setColor(35, 35, 35);
+			pl1->moveTo({ 0, 0 });
+
 			field playing_field;
 			playing_field.setBackground(background);
 			playing_field.setGravity(grav_acc);
 			playing_field.add(r);
 			playing_field.add(floor);
+			playing_field.add(pl1);
 
 			TTF_Init();
 			TTF_Font* Sans = TTF_OpenFont("OpenSans-Bold.ttf", 24);

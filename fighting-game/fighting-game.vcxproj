@@ -124,6 +124,7 @@
   <ItemGroup>
     <ClCompile Include="field.cpp" />
     <ClCompile Include="obj.cpp" />
+    <ClCompile Include="platform.cpp" />
     <ClCompile Include="rectangle.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="vector.cpp" />
@@ -132,6 +133,7 @@
     <ClInclude Include="field.h" />
     <ClInclude Include="linkedList.h" />
     <ClInclude Include="obj.h" />
+    <ClInclude Include="platform.h" />
     <ClInclude Include="rectangle.h" />
     <ClInclude Include="vector.h" />
   </ItemGroup>
