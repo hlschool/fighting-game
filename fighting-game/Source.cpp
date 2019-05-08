@@ -60,30 +60,39 @@ int main(int argc, char* args[])
 			rectangle background = { width, height };
 			background.setColor(70, 70, 70);
 
-			rectangle *r = new rectangle(250, 250);
+			rectangle *r = new rectangle(60, 120);
 			r->moveTo({ (width / 2) - (float)(r->w / 2) , 0 });
 
-			rectangle *floor = new rectangle(width, 70);
-			floor->fixed = true;
+			platform *floor = new platform(width, 70);
 			floor->setColor(35, 35, 35);
 			floor->moveTo({ 0, 650 });
+			
+			platform *right_wall = new platform(30, height);
+			right_wall->setColor(35, 35, 35);
+			right_wall->moveTo({ (float)(width - right_wall->w), 0 });
 
-			platform *pl1 = new platform(250, 100);
-			pl1->fixed = true;
+			platform *left_wall = new platform(30, height);
+			left_wall->setColor(35, 35, 35);
+			left_wall->moveTo({ 0, 0 });
+
+			platform *pl1 = new platform(150, 70);
 			pl1->setColor(35, 35, 35);
-			pl1->moveTo({ 0, 0 });
+			pl1->moveTo({ (float) ((width / 2) - (pl1->w / 2)), 350 });
 
 			field playing_field;
 			playing_field.setBackground(background);
 			playing_field.setGravity(grav_acc);
 			playing_field.add(r);
-			playing_field.add(floor);
-			playing_field.add(pl1);
+
+			playing_field.addPlatform(floor);
+			playing_field.addPlatform(pl1);
+			playing_field.addPlatform(right_wall);
+			playing_field.addPlatform(left_wall);
 
 			TTF_Init();
 			TTF_Font* Sans = TTF_OpenFont("OpenSans-Bold.ttf", 24);
 
-
+			float vel_x = 0;
 			//Main loop
 			SDL_Event evt;
 			bool programrunning = true;
@@ -91,22 +100,47 @@ int main(int argc, char* args[])
 			{
 				auto start = chrono::high_resolution_clock::now();
 
+				
 				while (SDL_PollEvent(&evt)) {
 					if (evt.type == SDL_QUIT)
 						programrunning = false;
-					else if (evt.type == SDL_KEYDOWN) {
+					
+					if (evt.type == SDL_KEYDOWN) {
 						if (evt.key.keysym.sym == SDLK_SPACE) {
-							if(evt.key.repeat == 0) {
-								r->push({ 0, -6 });
+							if(evt.key.repeat == 0 && playing_field.collides(*r, nullptr, nullptr, nullptr)) {
+								r->push({ 0, -7 });
 							}
-							
 						}
-						
+						else if (evt.key.keysym.sym == SDLK_a) {
+							if (evt.key.repeat == 0) {
+								vel_x += -10;
+							}
+						}
+						else if (evt.key.keysym.sym == SDLK_d) {
+							if (evt.key.repeat == 0) {
+								vel_x += 10;
+							}
+						}
 					}
+					if (evt.type == SDL_KEYUP) {
+						if (evt.key.keysym.sym == SDLK_a) {
+							if (evt.key.repeat == 0) {
+								vel_x += 10;
+							}
+						}
+						else if (evt.key.keysym.sym == SDLK_d) {
+							if (evt.key.repeat == 0) {
+								vel_x += -10;
+							}
+						}
+					}
+					
 				}
-				
+				r->vel.x = vel_x;
+
 				playing_field.update();
-				if (r->collidesWith(*floor, nullptr, nullptr)) {
+				int *amt = new int;
+				if (playing_field.collides(*r, nullptr, nullptr, nullptr)) {
 					r->setColor(255, 0, 0);
 				} else {
 					r->setColor(255, 255, 255);

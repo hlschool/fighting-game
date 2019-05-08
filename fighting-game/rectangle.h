@@ -10,7 +10,7 @@ public:
 	int g = 255; 
 	int b = 255;
 
-	bool collidesWith(const obj&, vector*, vector*);
+	bool collidesWith(const obj&, vector*, vector*, int*) const;
 	void update();
 
 	void setColor(int, int, int);
