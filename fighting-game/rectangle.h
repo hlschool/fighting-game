@@ -2,6 +2,10 @@
 #define RECTANGLE_H
 
 #include "obj.h"
+#include <string>
+//#include "STEVE BUSCEMI.h"
+#include "SDL_image.h"
+using namespace std;
 
 class rectangle : public obj {
 public:
@@ -16,6 +20,7 @@ public:
 	void setColor(int, int, int);
 	void draw(SDL_Renderer*);
 
+	rectangle();
 	rectangle(int, int);
 };
 

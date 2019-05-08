@@ -14,6 +14,8 @@ and may not be redistributed without written permission.*/
 #include "rectangle.h"
 #include "field.h"
 #include "platform.h"
+#include "SDL_image.h"
+#include "character.h"
 using namespace std;
 
 //Screen dimension constants
@@ -60,8 +62,11 @@ int main(int argc, char* args[])
 			rectangle background = { width, height };
 			background.setColor(70, 70, 70);
 
-			rectangle *r = new rectangle(60, 120);
-			r->moveTo({ (width / 2) - (float)(r->w / 2) , 0 });
+			//rectangle *r = new rectangle(60, 120);
+			//r->moveTo({ (width / 2) - (float)(r->w / 2) , 0 });
+
+			character *steve = new character();
+			steve->moveTo({ (width / 2) - (float)(steve->w / 2) , 0 });
 
 			platform *floor = new platform(width, 70);
 			floor->setColor(35, 35, 35);
@@ -82,7 +87,7 @@ int main(int argc, char* args[])
 			field playing_field;
 			playing_field.setBackground(background);
 			playing_field.setGravity(grav_acc);
-			playing_field.add(r);
+			playing_field.add(steve);
 
 			playing_field.addPlatform(floor);
 			playing_field.addPlatform(pl1);
@@ -107,8 +112,8 @@ int main(int argc, char* args[])
 					
 					if (evt.type == SDL_KEYDOWN) {
 						if (evt.key.keysym.sym == SDLK_SPACE) {
-							if(evt.key.repeat == 0 && playing_field.collides(*r, nullptr, nullptr, nullptr)) {
-								r->push({ 0, -7 });
+							if(evt.key.repeat == 0 && playing_field.collides(*steve, nullptr, nullptr, nullptr)) {
+								steve->push({ 0, -7 });
 							}
 						}
 						else if (evt.key.keysym.sym == SDLK_a) {
@@ -136,14 +141,14 @@ int main(int argc, char* args[])
 					}
 					
 				}
-				r->vel.x = vel_x;
+				steve->vel.x = vel_x;
 
 				playing_field.update();
 				int *amt = new int;
-				if (playing_field.collides(*r, nullptr, nullptr, nullptr)) {
-					r->setColor(255, 0, 0);
+				if (playing_field.collides(*steve, nullptr, nullptr, nullptr)) {
+					steve->setColor(255, 0, 0);
 				} else {
-					r->setColor(255, 255, 255);
+					steve->setColor(255, 255, 255);
 				}
 				playing_field.draw(gRenderer);
 
@@ -183,3 +188,4 @@ int main(int argc, char* args[])
 
 	return 0;
 }
+

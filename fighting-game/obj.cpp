@@ -17,3 +17,4 @@ void obj::move(const vector& v) {
 void obj::moveTo(const vector& v) {
 	pos = v;
 }
+

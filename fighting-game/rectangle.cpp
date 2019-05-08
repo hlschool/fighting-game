@@ -1,6 +1,10 @@
 #include "rectangle.h"
 #include <iostream>
+#include <cstring>
+#include "SDL_image.h"
 using namespace std;
+
+rectangle::rectangle() {}
 
 rectangle::rectangle(int width, int height) {
 	w = width;
