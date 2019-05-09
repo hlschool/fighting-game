@@ -4,14 +4,10 @@
 
 
 field::field() {
-	objs = new unorderedLinkedList<obj*>;
+	characters = new unorderedLinkedList<character*>;
 	platforms = new unorderedLinkedList<platform*>;
 	hitboxes = new unorderedLinkedList<hitbox*>;
 	background.fixed = true;
-}
-
-void field::add(obj* o) {
-	objs->insertFirst(o);
 }
 
 void field::addPlatform(platform* p) {
@@ -23,8 +19,9 @@ void field::addHitbox(hitbox* h) {
 }
 
 void field::addCharacter(character* c) {
-	objs->insertFirst(c);
-	hitboxes->insertFirst(c->hb);
+	characters->insertFirst(c);
+	hitboxes->insertFirst(c->attk_hb);
+	hitboxes->insertFirst(c->spike_hb);
 }
 
 void field::setBackground(const rectangle& b) {
@@ -38,15 +35,15 @@ void field::setGravity(const vector& g) {
 
 //dont ask me how my code works, i actually dont know
 //"your code looks like song lyrics written using only the stuff that comes after the question mark in a url"
-bool field::collides(const obj& o, obj** p, int* dir, int* amt, bool* hitbox) {
+bool field::collides(const obj& o, obj** p, int* dir, int* amt, int* type) {
 	bool collides = false;
 	bool calc_platform = p != NULL;
 	bool calc_dir = dir != NULL;
 	bool calc_amount = amt != NULL;
-	bool calc_hitbox = hitbox != NULL;
-	obj **temp_p = new obj*[platforms->length() + hitboxes->length()];
-	int *temp_d = new int[platforms->length() + hitboxes->length()];
-	bool *temp_h = new bool[platforms->length() + hitboxes->length()];
+	bool calc_type = type != NULL;
+	obj **temp_p = new obj*[platforms->length() + hitboxes->length() + characters->length()];
+	int *temp_d = new int[platforms->length() + hitboxes->length() + characters->length()];
+	int *temp_h = new int[platforms->length() + hitboxes->length() + characters->length()];
 	int amount = 0;
 	for (int i = 0; i < platforms->length(); i++) {
 		int *temp_dir = new int;
@@ -55,8 +52,8 @@ bool field::collides(const obj& o, obj** p, int* dir, int* amt, bool* hitbox) {
 				temp_p[amount] = platforms->get(i);
 			if(calc_dir)
 				temp_d[amount] = *temp_dir;
-			if (calc_hitbox)
-				temp_h[amount] = false;
+			if (calc_type)
+				temp_h[amount] = 0;
 			amount++;
 			collides = true;
 		}
@@ -65,11 +62,24 @@ bool field::collides(const obj& o, obj** p, int* dir, int* amt, bool* hitbox) {
 		int *temp_dir = new int;
 		if (o.collidesWith(*hitboxes->get(i), nullptr, nullptr, temp_dir)) {
 			if (calc_platform)
-				temp_p[amount] = platforms->get(i);
+				temp_p[amount] = hitboxes->get(i);
 			if (calc_dir)
 				temp_d[amount] = *temp_dir;
-			if (calc_hitbox)
-				temp_h[amount] = true;
+			if (calc_type)
+				temp_h[amount] = 1;
+			amount++;
+			collides = true;
+		}
+	}
+	for (int i = 0; i < characters->length(); i++) {
+		int *temp_dir = new int;
+		if (o.collidesWith(*characters->get(i), nullptr, nullptr, temp_dir)) {
+			if (calc_platform)
+				temp_p[amount] = characters->get(i);
+			if (calc_dir)
+				temp_d[amount] = *temp_dir;
+			if (calc_type)
+				temp_h[amount] = 2;
 			amount++;
 			collides = true;
 		}
@@ -79,8 +89,8 @@ bool field::collides(const obj& o, obj** p, int* dir, int* amt, bool* hitbox) {
 			p[i] = temp_p[i];
 		if(calc_dir)
 			dir[i] = temp_d[i];
-		if (calc_hitbox)
-			hitbox[i] = temp_h[i];
+		if (calc_type)
+			type[i] = temp_h[i];
 	}
 	if (calc_amount)
 		*amt = amount;
@@ -117,10 +127,10 @@ bool field::hitsPlatform(const obj& o, platform** p, int* dir, int* amt) {
 	return collides;
 }
 
-bool field::isHit(const obj& c) {
+bool field::isHit(const character& c) {
 	bool hit = false;
 	for (int i = 0; i < hitboxes->length(); i++) {
-		if (c.collidesWith(*hitboxes->get(i), nullptr, nullptr, nullptr) /*&& c.hb != hitboxes->get(i)*/ && hitboxes->get(i)->exists) {
+		if (c.collidesWith(*hitboxes->get(i), nullptr, nullptr, nullptr) && c.attk_hb != hitboxes->get(i) && c.spike_hb != hitboxes->get(i) && hitboxes->get(i)->exists) {
 			hit = true;
 			break;
 		}
@@ -129,18 +139,18 @@ bool field::isHit(const obj& c) {
 }
 
 void field::update() {
-	for (int i = 0; i < objs->length(); i++) {
-		objs->get(i)->push(gravity);
-		objs->get(i)->update();
+	for (int i = 0; i < characters->length(); i++) {
+		characters->get(i)->push(gravity);
+		characters->get(i)->update();
 		for (int j = 0; j < platforms->length(); j++) {
 			vector *normal = new vector(0, 0);
 			vector *move = new vector(0, 0);
-			objs->get(i)->collidesWith(*platforms->get(j), normal, move, nullptr);
-			objs->get(i)->push(*normal);
-			objs->get(i)->move(*move);
+			characters->get(i)->collidesWith(*platforms->get(j), normal, move, nullptr);
+			characters->get(i)->push(*normal);
+			characters->get(i)->move(*move);
 		}
-		for (int j = 0; j < hitboxes->length(); j++) {
-			//objs->get(i)->collidesWith(*hitboxes->get(j), nullptr, nullptr, nullptr);
+		if (isHit(*characters->get(i))) {
+			characters->get(i)->kill();
 		}
 	}
 	for (int i = 0; i < hitboxes->length(); i++) {
@@ -150,8 +160,8 @@ void field::update() {
 
 void field::draw(SDL_Renderer* renderer) {
 	background.draw(renderer);
-	for (int i = 0; i < objs->length(); i++) {
-		objs->get(i)->draw(renderer);
+	for (int i = 0; i < characters->length(); i++) {
+		characters->get(i)->draw(renderer);
 	}
 	for (int i = 0; i < platforms->length(); i++) {
 		platforms->get(i)->draw(renderer);

@@ -12,7 +12,7 @@ void hitbox::load() {
 }
 
 void hitbox::update() {
-	if (exists && frame_counter >= 1) {
+	if (exists && frame_counter >= 5) {
 		exists = false;
 		frame_counter = 0;
 	}

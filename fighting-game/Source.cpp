@@ -58,15 +58,17 @@ int main(int argc, char* args[])
 			//Creating renderer...
 			gRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
+			const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+
 			//background rectangle
 			rectangle background = { width, height };
 			background.setColor(70, 70, 70);
 
-			rectangle *dummy = new rectangle(60, 120);
-			dummy->moveTo({ (width / 2) - (float)(dummy->w / 2) + 200 , 0 });
+			character *steve_1 = new character();
+			steve_1->moveTo({ (width / 2) - (float)(steve_1->w / 2) - 300 , 0 });
 
-			character *steve = new character();
-			steve->moveTo({ (width / 2) - (float)(steve->w / 2) , 0 });
+			character *steve_2 = new character();
+			steve_2->moveTo({ (width / 2) - (float)(steve_2->w / 2) + 300 , 0 });
 
 			platform *floor = new platform(width, 70);
 			floor->setColor(35, 35, 35);
@@ -88,9 +90,8 @@ int main(int argc, char* args[])
 			playing_field.setBackground(background);
 			playing_field.setGravity(grav_acc);
 
-			playing_field.add(dummy);
-
-			playing_field.addCharacter(steve);
+			playing_field.addCharacter(steve_1);
+			playing_field.addCharacter(steve_2);
 
 			playing_field.addPlatform(floor);
 			playing_field.addPlatform(pl1);
@@ -100,7 +101,8 @@ int main(int argc, char* args[])
 			TTF_Init();
 			TTF_Font* Sans = TTF_OpenFont("OpenSans-Bold.ttf", 24);
 
-			float vel_x = 0;
+			float vel_x_1 = 0;
+			float vel_x_2 = 0;
 			//Main loop
 			SDL_Event evt;
 			bool programrunning = true;
@@ -108,52 +110,99 @@ int main(int argc, char* args[])
 			{
 				auto start = chrono::high_resolution_clock::now();
 				
+				
 				while (SDL_PollEvent(&evt)) {
 					if (evt.type == SDL_QUIT)
 						programrunning = false;
 					
 					if (evt.type == SDL_KEYDOWN) {
-						if (evt.key.keysym.sym == SDLK_SPACE) {
-							if(evt.key.repeat == 0 && playing_field.collides(*steve, nullptr, nullptr, nullptr, nullptr)) {
-								steve->push({ 0, -7 });
+
+						//steve_1
+						if (evt.key.keysym.sym == SDLK_w) {
+							if(evt.key.repeat == 0 && playing_field.hitsPlatform(*steve_1, nullptr, nullptr, nullptr)) {
+								steve_1->push({ 0, -7 });
 							}
 						}
-						else if (evt.key.keysym.sym == SDLK_r) {
+						else if (evt.key.keysym.sym == SDLK_g && keystate[SDL_SCANCODE_S]) {
 							if (evt.key.repeat == 0) {
-								steve->attack();
+								steve_1->attack(true);
+							}
+						}
+						else if (evt.key.keysym.sym == SDLK_g) {
+							if (evt.key.repeat == 0) {
+								steve_1->attack(false);
 							}
 						}
 						else if (evt.key.keysym.sym == SDLK_a) {
 							if (evt.key.repeat == 0) {
-								vel_x += -10;
+								vel_x_1 += -10;
 							}
 						}
 						else if (evt.key.keysym.sym == SDLK_d) {
 							if (evt.key.repeat == 0) {
-								vel_x += 10;
+								vel_x_1 += 10;
+							}
+						}
+
+						//steve_2
+						if (evt.key.keysym.sym == SDLK_UP) {
+							if (evt.key.repeat == 0 && playing_field.hitsPlatform(*steve_2, nullptr, nullptr, nullptr)) {
+								steve_2->push({ 0, -7 });
+							}
+						}
+						else if (evt.key.keysym.sym == SDLK_KP_0 && keystate[SDL_SCANCODE_DOWN]) {
+							if (evt.key.repeat == 0) {
+								steve_2->attack(true);
+							}
+						}
+						else if (evt.key.keysym.sym == SDLK_KP_0) {
+							if (evt.key.repeat == 0) {
+								steve_2->attack(false);
+							}
+						}
+						else if (evt.key.keysym.sym == SDLK_LEFT) {
+							if (evt.key.repeat == 0) {
+								vel_x_2 += -10;
+							}
+						}
+						else if (evt.key.keysym.sym == SDLK_RIGHT) {
+							if (evt.key.repeat == 0) {
+								vel_x_2 += 10;
 							}
 						}
 					}
 					if (evt.type == SDL_KEYUP) {
+
+						//steve_1
 						if (evt.key.keysym.sym == SDLK_a) {
 							if (evt.key.repeat == 0) {
-								vel_x += 10;
+								vel_x_1 += 10;
 							}
 						}
 						else if (evt.key.keysym.sym == SDLK_d) {
 							if (evt.key.repeat == 0) {
-								vel_x += -10;
+								vel_x_1 += -10;
+							}
+						}
+
+						//steve_2
+						if (evt.key.keysym.sym == SDLK_LEFT) {
+							if (evt.key.repeat == 0) {
+								vel_x_2 += 10;
+							}
+						}
+						else if (evt.key.keysym.sym == SDLK_RIGHT) {
+							if (evt.key.repeat == 0) {
+								vel_x_2 += -10;
 							}
 						}
 					}
 					
 				}
-				steve->vel.x = vel_x;
+				steve_1->vel.x = vel_x_1;
+				steve_2->vel.x = vel_x_2;
 
 				playing_field.update();
-				if (playing_field.isHit(*dummy)) {
-					dummy->setColor(255, 0, 0);
-				}
 				playing_field.draw(gRenderer);
 
 				//FPS counter

@@ -7,18 +7,26 @@
 class character:public rectangle
 {
 public:
-	void attack();
+	void attack(bool spike);
+	void kill();
 
 	void update();
 	void draw(SDL_Renderer*);
 
 	character();
 	
-	hitbox *hb;
+	hitbox *attk_hb;
+	hitbox *spike_hb;
 
 	SDL_Texture* texture;
 	SDL_Surface* surface;
 	string img_path = "steve.png";
+
+	bool flipped = false;
+	bool dead = false;
+
+	const int attack_delay = 30;
+	int delay_count = 0;
 
 	double HP;
 	double EHP;
