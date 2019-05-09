@@ -62,8 +62,8 @@ int main(int argc, char* args[])
 			rectangle background = { width, height };
 			background.setColor(70, 70, 70);
 
-			//rectangle *r = new rectangle(60, 120);
-			//r->moveTo({ (width / 2) - (float)(r->w / 2) , 0 });
+			rectangle *dummy = new rectangle(60, 120);
+			dummy->moveTo({ (width / 2) - (float)(dummy->w / 2) + 200 , 0 });
 
 			character *steve = new character();
 			steve->moveTo({ (width / 2) - (float)(steve->w / 2) , 0 });
@@ -87,7 +87,10 @@ int main(int argc, char* args[])
 			field playing_field;
 			playing_field.setBackground(background);
 			playing_field.setGravity(grav_acc);
-			playing_field.add(steve);
+
+			playing_field.add(dummy);
+
+			playing_field.addCharacter(steve);
 
 			playing_field.addPlatform(floor);
 			playing_field.addPlatform(pl1);
@@ -104,7 +107,6 @@ int main(int argc, char* args[])
 			while (programrunning)
 			{
 				auto start = chrono::high_resolution_clock::now();
-
 				
 				while (SDL_PollEvent(&evt)) {
 					if (evt.type == SDL_QUIT)
@@ -112,8 +114,13 @@ int main(int argc, char* args[])
 					
 					if (evt.type == SDL_KEYDOWN) {
 						if (evt.key.keysym.sym == SDLK_SPACE) {
-							if(evt.key.repeat == 0 && playing_field.collides(*steve, nullptr, nullptr, nullptr)) {
+							if(evt.key.repeat == 0 && playing_field.collides(*steve, nullptr, nullptr, nullptr, nullptr)) {
 								steve->push({ 0, -7 });
+							}
+						}
+						else if (evt.key.keysym.sym == SDLK_r) {
+							if (evt.key.repeat == 0) {
+								steve->attack();
 							}
 						}
 						else if (evt.key.keysym.sym == SDLK_a) {
@@ -144,11 +151,8 @@ int main(int argc, char* args[])
 				steve->vel.x = vel_x;
 
 				playing_field.update();
-				int *amt = new int;
-				if (playing_field.collides(*steve, nullptr, nullptr, nullptr)) {
-					steve->setColor(255, 0, 0);
-				} else {
-					steve->setColor(255, 255, 255);
+				if (playing_field.isHit(*dummy)) {
+					dummy->setColor(255, 0, 0);
 				}
 				playing_field.draw(gRenderer);
 

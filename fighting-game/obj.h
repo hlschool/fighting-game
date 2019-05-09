@@ -20,7 +20,8 @@ public:
 	void move(const vector&);
 	void moveTo(const vector&);
 	
-	virtual bool collidesWith(const obj&, vector*, vector*, int*) const = 0;
+	bool collidesWith(const obj&, vector*, vector*, int*) const;
+
 	virtual void update() = 0;
 	virtual void draw(SDL_Renderer*) = 0;
 

@@ -124,6 +124,8 @@
   <ItemGroup>
     <ClCompile Include="character.cpp" />
     <ClCompile Include="field.cpp" />
+    <ClCompile Include="hitbox.cpp" />
+    <ClCompile Include="moveset.cpp" />
     <ClCompile Include="obj.cpp" />
     <ClCompile Include="platform.cpp" />
     <ClCompile Include="rectangle.cpp" />
@@ -133,7 +135,9 @@
   <ItemGroup>
     <ClInclude Include="character.h" />
     <ClInclude Include="field.h" />
+    <ClInclude Include="hitbox.h" />
     <ClInclude Include="linkedList.h" />
+    <ClInclude Include="moveset.h" />
     <ClInclude Include="obj.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="rectangle.h" />
