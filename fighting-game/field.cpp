@@ -20,8 +20,10 @@ void field::addHitbox(hitbox* h) {
 
 void field::addCharacter(character* c) {
 	characters->insertFirst(c);
-	hitboxes->insertFirst(c->attk_hb);
-	hitboxes->insertFirst(c->spike_hb);
+	hitboxes->insertFirst(c->moves.aerial.hb);
+	hitboxes->insertFirst(c->moves.jab.hb);
+	hitboxes->insertFirst(c->moves.dash.hb);
+	hitboxes->insertFirst(c->moves.special.hb);
 }
 
 void field::setBackground(const rectangle& b) {
@@ -127,10 +129,37 @@ bool field::hitsPlatform(const obj& o, platform** p, int* dir, int* amt) {
 	return collides;
 }
 
+bool field::hitsGround(const obj& o, platform** p, int* amt) {
+	bool collides = false;
+	bool calc_platform = p != NULL;
+	bool calc_amount = amt != NULL;
+	platform **temp_p = new platform*[platforms->length()];
+	int *temp_d = new int[platforms->length()];
+	int amount = 0;
+	for (int i = 0; i < platforms->length(); i++) {
+		int *temp_dir = new int;
+		if (o.collidesWith(*platforms->get(i), nullptr, nullptr, temp_dir)) {
+			if (calc_platform)
+				if (*temp_dir == 1) {
+					temp_p[amount] = platforms->get(i);
+					amount++;
+					collides = true;
+				}
+		}
+	}
+	for (int i = 0; i < amount; i++) {
+		if (calc_platform)
+			p[i] = temp_p[i];
+	}
+	if (calc_amount)
+		*amt = amount;
+	return collides;
+}
+
 bool field::isHit(const character& c) {
 	bool hit = false;
 	for (int i = 0; i < hitboxes->length(); i++) {
-		if (c.collidesWith(*hitboxes->get(i), nullptr, nullptr, nullptr) && c.attk_hb != hitboxes->get(i) && c.spike_hb != hitboxes->get(i) && hitboxes->get(i)->exists) {
+		if (c.collidesWith(*hitboxes->get(i), nullptr, nullptr, nullptr) && c.isOwnHitbox(hitboxes->get(i)) && hitboxes->get(i)->exists) {
 			hit = true;
 			break;
 		}

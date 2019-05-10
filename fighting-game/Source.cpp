@@ -64,11 +64,11 @@ int main(int argc, char* args[])
 			rectangle background = { width, height };
 			background.setColor(70, 70, 70);
 
-			character *steve_1 = new character();
-			steve_1->moveTo({ (width / 2) - (float)(steve_1->w / 2) - 300 , 0 });
+			character *fighter_1 = new character();
+			fighter_1->moveTo({ (width / 2) - (float)(fighter_1->w / 2) - 300 , 0 });
 
-			character *steve_2 = new character();
-			steve_2->moveTo({ (width / 2) - (float)(steve_2->w / 2) + 300 , 0 });
+			character *fighter_2 = new character();
+			fighter_2->moveTo({ (width / 2) - (float)(fighter_2->w / 2) + 300 , 0 });
 
 			platform *floor = new platform(width, 70);
 			floor->setColor(35, 35, 35);
@@ -90,8 +90,8 @@ int main(int argc, char* args[])
 			playing_field.setBackground(background);
 			playing_field.setGravity(grav_acc);
 
-			playing_field.addCharacter(steve_1);
-			playing_field.addCharacter(steve_2);
+			playing_field.addCharacter(fighter_1);
+			playing_field.addCharacter(fighter_2);
 
 			playing_field.addPlatform(floor);
 			playing_field.addPlatform(pl1);
@@ -115,50 +115,33 @@ int main(int argc, char* args[])
 					if (evt.type == SDL_QUIT)
 						programrunning = false;
 					
-					if (evt.type == SDL_KEYDOWN) {
+					if (evt.type == SDL_KEYDOWN && evt.key.repeat == 0) {
 
 						//steve_1
-						if (evt.key.keysym.sym == SDLK_w) {
-							if(evt.key.repeat == 0 && playing_field.hitsPlatform(*steve_1, nullptr, nullptr, nullptr)) {
-								steve_1->push({ 0, -7 });
-							}
+						switch (evt.key.keysym.sym) {
+
 						}
-						else if (evt.key.keysym.sym == SDLK_g && keystate[SDL_SCANCODE_S]) {
-							if (evt.key.repeat == 0) {
-								steve_1->attack(true);
-							}
+						if (evt.key.keysym.sym == SDLK_w && playing_field.hitsPlatform(*fighter_1, nullptr, nullptr, nullptr)) {
+							fighter_1->push({ 0, -7 });
 						}
-						else if (evt.key.keysym.sym == SDLK_g) {
-							if (evt.key.repeat == 0) {
-								steve_1->attack(false);
-							}
+						else if (evt.key.keysym.sym == SDLK_g && !playing_field.hitsGround(*fighter_1, nullptr, nullptr)) {
+							fighter_1->attack(JAB);
 						}
 						else if (evt.key.keysym.sym == SDLK_a) {
-							if (evt.key.repeat == 0) {
-								vel_x_1 += -10;
-							}
+							vel_x_1 += -10;
 						}
 						else if (evt.key.keysym.sym == SDLK_d) {
-							if (evt.key.repeat == 0) {
-								vel_x_1 += 10;
-							}
+							vel_x_1 += 10;
 						}
 
 						//steve_2
 						if (evt.key.keysym.sym == SDLK_UP) {
-							if (evt.key.repeat == 0 && playing_field.hitsPlatform(*steve_2, nullptr, nullptr, nullptr)) {
-								steve_2->push({ 0, -7 });
+							if (evt.key.repeat == 0 && playing_field.hitsPlatform(*fighter_2, nullptr, nullptr, nullptr)) {
+								fighter_2->push({ 0, -7 });
 							}
 						}
-						else if (evt.key.keysym.sym == SDLK_KP_0 && keystate[SDL_SCANCODE_DOWN]) {
-							if (evt.key.repeat == 0) {
-								steve_2->attack(true);
-							}
-						}
-						else if (evt.key.keysym.sym == SDLK_KP_0) {
-							if (evt.key.repeat == 0) {
-								steve_2->attack(false);
-							}
+						else if (evt.key.keysym.sym == SDLK_KP_0 && !playing_field.hitsGround(*fighter_1, nullptr, nullptr)) {
+							fighter_1->attack(JAB);
 						}
 						else if (evt.key.keysym.sym == SDLK_LEFT) {
 							if (evt.key.repeat == 0) {
@@ -199,8 +182,8 @@ int main(int argc, char* args[])
 					}
 					
 				}
-				steve_1->vel.x = vel_x_1;
-				steve_2->vel.x = vel_x_2;
+				fighter_1->vel.x = vel_x_1;
+				fighter_2->vel.x = vel_x_2;
 
 				playing_field.update();
 				playing_field.draw(gRenderer);
