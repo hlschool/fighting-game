@@ -20,6 +20,7 @@ public:
 
 	SDL_Texture* texture;
 	SDL_Surface* surface;
+<<<<<<< Updated upstream
 	string img_path = "steve.png";
 
 	bool flipped = false;
@@ -27,6 +28,9 @@ public:
 
 	const int attack_delay = 30;
 	int delay_count = 0;
+=======
+	string img_path = "FighterTest.png";
+>>>>>>> Stashed changes
 
 	double HP;
 	double EHP;
