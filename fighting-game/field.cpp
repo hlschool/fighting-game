@@ -1,7 +1,7 @@
 #include "field.h"
 #include "rectangle.h"
 #include "obj.h"
-
+#include <iostream>
 
 field::field() {
 	characters = new unorderedLinkedList<character*>;
@@ -129,37 +129,26 @@ bool field::hitsPlatform(const obj& o, platform** p, int* dir, int* amt) {
 	return collides;
 }
 
-bool field::hitsGround(const obj& o, platform** p, int* amt) {
-	bool collides = false;
-	bool calc_platform = p != NULL;
-	bool calc_amount = amt != NULL;
-	platform **temp_p = new platform*[platforms->length()];
-	int *temp_d = new int[platforms->length()];
-	int amount = 0;
+bool field::hitsGround(const obj& o) {
 	for (int i = 0; i < platforms->length(); i++) {
 		int *temp_dir = new int;
 		if (o.collidesWith(*platforms->get(i), nullptr, nullptr, temp_dir)) {
-			if (calc_platform)
-				if (*temp_dir == 1) {
-					temp_p[amount] = platforms->get(i);
-					amount++;
-					collides = true;
-				}
+			cout << *temp_dir << endl;
+			if (*temp_dir == 1) {
+				return true;
+			}
 		}
 	}
-	for (int i = 0; i < amount; i++) {
-		if (calc_platform)
-			p[i] = temp_p[i];
-	}
-	if (calc_amount)
-		*amt = amount;
-	return collides;
+	return false;
 }
 
-bool field::isHit(const character& c) {
+bool field::isHit(const character& c, hitbox* hb) {
+	bool calc_hitbox = hb != NULL;
 	bool hit = false;
 	for (int i = 0; i < hitboxes->length(); i++) {
-		if (c.collidesWith(*hitboxes->get(i), nullptr, nullptr, nullptr) && c.isOwnHitbox(hitboxes->get(i)) && hitboxes->get(i)->exists) {
+		if (c.collidesWith(*hitboxes->get(i), nullptr, nullptr, nullptr) && !c.isOwnHitbox(hitboxes->get(i)) && hitboxes->get(i)->exists) {
+			if (calc_hitbox)
+				*hb = *hitboxes->get(i);
 			hit = true;
 			break;
 		}
@@ -170,16 +159,25 @@ bool field::isHit(const character& c) {
 void field::update() {
 	for (int i = 0; i < characters->length(); i++) {
 		characters->get(i)->push(gravity);
-		characters->get(i)->update();
+		
+		vector sum_move = { 0, 0 };
+		vector sum_push = { 0, 0 };
 		for (int j = 0; j < platforms->length(); j++) {
 			vector *normal = new vector(0, 0);
 			vector *move = new vector(0, 0);
-			characters->get(i)->collidesWith(*platforms->get(j), normal, move, nullptr);
-			characters->get(i)->push(*normal);
-			characters->get(i)->move(*move);
+			int *dir = new int;
+			characters->get(i)->collidesWith(*platforms->get(j), normal, move, dir);
+			sum_move += *move;
+			sum_push += *normal;
 		}
-		if (isHit(*characters->get(i))) {
-			characters->get(i)->kill();
+		characters->get(i)->push(sum_push);
+		characters->get(i)->move(sum_move);
+		characters->get(i)->update();
+		hitbox *temp_hb = new hitbox(0, 0, 0, 0, { 0, 0 });
+		if (isHit(*characters->get(i), temp_hb)) {
+			characters->get(i)->hit(temp_hb->stun, temp_hb->damage, temp_hb->knockback);
+			temp_hb->exists = false;
+			temp_hb->frame_counter = 0;
 		}
 	}
 	for (int i = 0; i < hitboxes->length(); i++) {

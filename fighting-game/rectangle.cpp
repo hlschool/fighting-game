@@ -12,11 +12,9 @@ rectangle::rectangle(int width, int height) {
 };
 
 void rectangle::update() {
-	vector temp = pos;
-	pos += vel;
+	move(vel);
 	vel += acc;
 	acc = { 0, 0 };
-	last_pos = temp;
 }
 
 void rectangle::setColor(int red, int green, int blue) {

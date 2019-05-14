@@ -12,14 +12,7 @@ public:
 	vector right_pos;
 	vector left_pos;
 
-	int damage;
-	vector knockback;
-
-	int w;
-	int h;
-
 	int buffer_frames;
 	int delay_frames;
-	int stun_frames;
 };
 #endif

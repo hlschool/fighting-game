@@ -2,9 +2,15 @@
 #define CONSTANTS_H
 
 #include "vector.h"
+#include <string>
+using namespace std;
 
 class constants {
 public:
+	const static string fighter_img_path;
+	const static int fighter_img_w;
+	const static int fighter_img_h;
+
 	const static int fighter_aerial_hitbox_w;
 	const static int fighter_aerial_hitbox_h;
 	const static vector fighter_aerial_right_pos;
@@ -44,6 +50,10 @@ public:
 	const static int fighter_special_buffer;
 	const static int fighter_special_delay;
 	const static int fighter_special_stun;
+
+	const static string steve_img_path;
+	const static int steve_img_w;
+	const static int steve_img_h;
 
 	const static int steve_aerial_hitbox_w;
 	const static int steve_aerial_hitbox_h;

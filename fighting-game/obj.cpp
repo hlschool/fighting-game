@@ -1,20 +1,30 @@
 #include "obj.h"
+#include <iostream>
+using namespace std;
 
 obj::obj() { }
 
-void obj::push(const vector& force) {
+void obj::push(const vector force) {
 	if (!fixed) {
 		acc += force;
 	}
 }
 
-void obj::move(const vector& v) {
+void obj::move(const vector v) {
+	/*if (v.x != 0)
+		last_pos.x = pos.x;
+	if (v.y != 0)
+		last_pos.y = pos.y;*/
 	if (!fixed) {
 		pos += v;
 	}
 }
 
-void obj::moveTo(const vector& v) {
+void obj::moveTo(const vector v) {
+	if (v.x != 0)
+		last_pos.x = pos.x;
+	if (v.y != 0)
+		last_pos.y = pos.y;
 	pos = v;
 }
 
@@ -73,6 +83,9 @@ bool obj::collidesWith(const obj& o, vector* n, vector* m, int* dir) const {
 		if (calc_dir)
 			*dir = 0;
 	}
+	if (calc_dir)
+		if (*dir != 0 && *dir != 1) {
+		}
 	return collides;
 }
 

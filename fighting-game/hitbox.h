@@ -11,11 +11,14 @@ public:
 	void update();
 	//void draw(SDL_Renderer*);
 
-	hitbox(int, int);
+	hitbox(int, int, int, int, vector);
 
 	bool exists;
 
-private:
+	int stun;
+	int damage;
+	vector knockback = { 0, 0 };
+
 	int frame_counter;
 };
 

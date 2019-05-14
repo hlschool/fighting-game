@@ -1,34 +1,40 @@
 #include "character.h"
 #include "constants.h"
+#include <iostream>;
 
 character::character() {
+	attacking = NOTHING;
 	setFighter();
 }
 
-void character::attack(move_types m) {
-	switch (m) {
-	case AERIAL:
-		moves.aerial.hb->load();
-		attack_delay = moves.aerial.buffer_frames;
-		break;
-	case JAB:
-		moves.jab.hb->load();
-		attack_delay = moves.jab.buffer_frames;
-		break;
-	case DASH:
-		moves.dash.hb->load();
-		attack_delay = moves.dash.buffer_frames;
-		break;
-	case SPECIAL:
-		moves.special.hb->load();
-		attack_delay = moves.special.buffer_frames;
-		break;
-	}
-
+void character::startAttack(move_types m) {
+	if (!delayed && !buffered && !stunned)
+		attacking = m;
 }
 
-void character::kill() {
-	dead = true;
+void character::hit(int stun, int damage, const vector knockback) {
+	stun_frames = stun;
+	stun_count = 0;
+	stunned = true;
+	push(knockback);
+}
+
+void character::control(const vector v) {
+	if (!stunned) {
+		if (v.x != 0)
+			vel.x = 0;
+		if (v.y != 0)
+			vel.y = 0;
+		move(v);
+
+		if ((flipped && v.x > 0) || (!flipped && v.x < 0)) {
+			moves.aerial.hb->knockback = { -moves.aerial.hb->knockback.x, moves.aerial.hb->knockback.y };
+			moves.jab.hb->knockback = { -moves.jab.hb->knockback.x, moves.jab.hb->knockback.y };
+			moves.dash.hb->knockback = { -moves.dash.hb->knockback.x, moves.dash.hb->knockback.y };
+			moves.special.hb->knockback = { -moves.special.hb->knockback.x, moves.special.hb->knockback.y };
+			flipped = !flipped;
+		}
+	}
 }
 
 bool character::isOwnHitbox(hitbox* h) const {
@@ -39,34 +45,90 @@ bool character::isOwnHitbox(hitbox* h) const {
 }
 
 void character::update() {
-	vector temp = pos;
-	if (!dead) {
-		pos += vel;
-		vel += acc;
-		acc = { 0, 0 };
-		last_pos = temp;
-	}
+	last_pos = pos;
+	move(vel);
+	vel += acc;
+	acc = { 0, 0 };
 
 	if (flipped) {
-		moves.aerial.hb->moveTo(pos + moves.aerial.left_pos);
-		moves.jab.hb->moveTo(pos + moves.jab.left_pos);
-		moves.dash.hb->moveTo(pos + moves.dash.left_pos);
-		moves.special.hb->moveTo(pos + moves.special.left_pos);
+		moves.aerial.hb->moveTo((pos + moves.aerial.left_pos));
+		moves.jab.hb->moveTo((pos + moves.jab.left_pos));
+		moves.dash.hb->moveTo((pos + moves.dash.left_pos));
+		moves.special.hb->moveTo((pos + moves.special.left_pos));
 	}
 	else {
-		moves.aerial.hb->moveTo(pos + moves.aerial.right_pos);
-		moves.jab.hb->moveTo(pos + moves.jab.right_pos);
-		moves.dash.hb->moveTo(pos + moves.dash.right_pos);
-		moves.special.hb->moveTo(pos + moves.special.right_pos);
+		moves.aerial.hb->moveTo((pos + moves.aerial.right_pos));
+		moves.jab.hb->moveTo((pos + moves.jab.right_pos));
+		moves.dash.hb->moveTo((pos + moves.dash.right_pos));
+		moves.special.hb->moveTo((pos + moves.special.right_pos));
 	}
 
-	if ((flipped && vel.x > 0) || (!flipped && vel.x < 0))
-		flipped = !flipped;
-
-	if (delay_count >= attack_delay)
+	if (!stunned) {
+		if (attacking != NOTHING) {
+			if (!delayed && !buffered && !stunned) {
+				delay_count = 0;
+				delayed = true;
+				switch (attacking) {
+				case AERIAL:
+					delay_frames = moves.aerial.delay_frames;
+					break;
+				case JAB:
+					delay_frames = moves.jab.delay_frames;
+					break;
+				case DASH:
+					delay_frames = moves.dash.delay_frames;
+					break;
+				case SPECIAL:
+					delay_frames = moves.special.delay_frames;
+					break;
+				}
+			}
+			if (delayed && delay_count < delay_frames) {
+				delay_count++;
+			}
+			if (delayed && delay_count >= delay_frames) {
+				delayed = false;
+				buffer_count = 0;
+				buffered = true;
+				switch (attacking) {
+				case AERIAL:
+					moves.aerial.hb->load();
+					buffer_frames = moves.aerial.buffer_frames;
+					break;
+				case JAB:
+					moves.jab.hb->load();
+					buffer_frames = moves.jab.buffer_frames;
+					break;
+				case DASH:
+					moves.dash.hb->load();
+					buffer_frames = moves.dash.buffer_frames;
+					break;
+				case SPECIAL:
+					moves.special.hb->load();
+					buffer_frames = moves.special.buffer_frames;
+					break;
+				}
+			}
+			if (buffered && buffer_count < buffer_frames) {
+				buffer_count++;
+			}
+			if (buffered && buffer_count >= buffer_frames) {
+				buffered = false;
+				attacking = NOTHING;
+			}
+		}
+	}
+	if (stunned && stun_count < stun_frames) {
+		stun_count++;
+	}
+	if (stunned && stun_count >= stun_frames) {
+		stun_count = 0;
+		stunned = false;
 		delay_count = 0;
-	else if (delay_count > 0)
-		delay_count++;
+		delayed = false;
+		buffer_count = 0;
+		buffered = false;
+	}
 }
 
 void character::draw(SDL_Renderer* renderer) {
@@ -76,16 +138,16 @@ void character::draw(SDL_Renderer* renderer) {
 }
 
 void character::setFighter() {
-	surface = IMG_Load("FighterTest.png");
-	w = surface->w;
-	h = surface->h;
-	//moves = { { new hitbox(constants::fighter_aerial_hitbox_w, constants::fighter_aerial_hitbox_h), constants::fighter_aerial_right_pos, constants::fighter_aerial_left_pos, constants::fighter_aerial_damage, constants::fighter_aerial_knockback, constants::fighter_aerial_buffer, constants::fighter_aerial_delay, constants::fighter_aerial_stun },    //Aerial
-	//		  { new hitbox(constants::fighter_jab_hitbox_w, constants::fighter_jab_hitbox_h), constants::fighter_jab_right_pos, constants::fighter_jab_left_pos, constants::fighter_jab_damage, constants::fighter_jab_knockback, constants::fighter_jab_buffer, constants::fighter_jab_delay, constants::fighter_jab_stun },    //Jab
-	//		  { new hitbox(constants::fighter_dash_hitbox_w, constants::fighter_dash_hitbox_h), constants::fighter_dash_right_pos, constants::fighter_dash_left_pos, constants::fighter_dash_damage, constants::fighter_dash_knockback, constants::fighter_dash_buffer, constants::fighter_dash_delay, constants::fighter_dash_stun },    //Dash
-	//		  { new hitbox(constants::fighter_special_hitbox_w, constants::fighter_special_hitbox_h), constants::fighter_special_right_pos, constants::fighter_special_left_pos, constants::fighter_special_damage, constants::fighter_special_knockback, constants::fighter_special_buffer, constants::fighter_special_delay, constants::fighter_special_stun }, }; // Special
+	surface = IMG_Load(constants::fighter_img_path.c_str());
+	w = constants::fighter_img_w;
+	h = constants::fighter_img_h;
+	//moves = { { new hitbox(constants::fighter_aerial_hitbox_w, constants::fighter_aerial_hitbox_h, constants::fighter_aerial_stun, constants::fighter_aerial_damage, constants::fighter_aerial_knockback), constants::fighter_aerial_right_pos, constants::fighter_aerial_left_pos, constants::fighter_aerial_buffer, constants::fighter_aerial_delay },    //Aerial
+	//		  { new hitbox(constants::fighter_jab_hitbox_w, constants::fighter_jab_hitbox_h, constants::fighter_jab_stun, constants::fighter_jab_damage, constants::fighter_jab_knockback), constants::fighter_jab_right_pos, constants::fighter_jab_left_pos, constants::fighter_jab_buffer, constants::fighter_jab_delay },    //Jab
+	//		  { new hitbox(constants::fighter_dash_hitbox_w, constants::fighter_dash_hitbox_h, constants::fighter_dash_stun, constants::fighter_dash_damage, constants::fighter_dash_knockback), constants::fighter_dash_right_pos, constants::fighter_dash_left_pos, constants::fighter_dash_buffer, constants::fighter_dash_delay },    //Dash
+	//		  { new hitbox(constants::fighter_special_hitbox_w, constants::fighter_special_hitbox_h, constants::fighter_special_stun, constants::fighter_special_damage, constants::fighter_special_knockback), constants::fighter_special_right_pos, constants::fighter_special_left_pos, constants::fighter_special_buffer, constants::fighter_special_delay }, }; // Special;
 	
-	moves = { { new hitbox(constants::fighter_jab_hitbox_w, constants::fighter_jab_hitbox_h), constants::fighter_jab_right_pos, constants::fighter_jab_left_pos, constants::fighter_jab_damage, constants::fighter_jab_knockback, constants::fighter_jab_buffer, constants::fighter_jab_delay, constants::fighter_jab_stun },    //Aerial
-	{ new hitbox(constants::fighter_jab_hitbox_w, constants::fighter_jab_hitbox_h), constants::fighter_jab_right_pos, constants::fighter_jab_left_pos, constants::fighter_jab_damage, constants::fighter_jab_knockback, constants::fighter_jab_buffer, constants::fighter_jab_delay, constants::fighter_jab_stun },    //Jab
-	{ new hitbox(constants::fighter_jab_hitbox_w, constants::fighter_jab_hitbox_h), constants::fighter_jab_right_pos, constants::fighter_jab_left_pos, constants::fighter_jab_damage, constants::fighter_jab_knockback, constants::fighter_jab_buffer, constants::fighter_jab_delay, constants::fighter_jab_stun },    //Dash
-	{ new hitbox(constants::fighter_jab_hitbox_w, constants::fighter_jab_hitbox_h), constants::fighter_jab_right_pos, constants::fighter_jab_left_pos, constants::fighter_jab_damage, constants::fighter_jab_knockback, constants::fighter_jab_buffer, constants::fighter_jab_delay, constants::fighter_jab_stun }, }; // Special
+	moves = { { new hitbox(constants::fighter_jab_hitbox_w, constants::fighter_jab_hitbox_h, constants::fighter_jab_stun, constants::fighter_jab_damage, constants::fighter_jab_knockback), constants::fighter_jab_right_pos, constants::fighter_jab_left_pos, constants::fighter_jab_buffer, constants::fighter_jab_delay },    //Aerial
+			  { new hitbox(constants::fighter_jab_hitbox_w, constants::fighter_jab_hitbox_h, constants::fighter_jab_stun, constants::fighter_jab_damage, constants::fighter_jab_knockback), constants::fighter_jab_right_pos, constants::fighter_jab_left_pos, constants::fighter_jab_buffer, constants::fighter_jab_delay },    //Jab
+			  { new hitbox(constants::fighter_jab_hitbox_w, constants::fighter_jab_hitbox_h, constants::fighter_jab_stun, constants::fighter_jab_damage, constants::fighter_jab_knockback), constants::fighter_jab_right_pos, constants::fighter_jab_left_pos, constants::fighter_jab_buffer, constants::fighter_jab_delay },    //Dash
+			  { new hitbox(constants::fighter_jab_hitbox_w, constants::fighter_jab_hitbox_h, constants::fighter_jab_stun, constants::fighter_jab_damage, constants::fighter_jab_knockback), constants::fighter_jab_right_pos, constants::fighter_jab_left_pos, constants::fighter_jab_buffer, constants::fighter_jab_delay }, }; // Special;
 }

@@ -26,8 +26,8 @@ public:
 
 	bool collides(const obj&, obj**, int*, int*, int*);
 	bool hitsPlatform(const obj&, platform**, int*, int*);
-	bool hitsGround(const obj&, platform**, int*);
-	bool isHit(const character&);
+	bool hitsGround(const obj&);
+	bool isHit(const character&, hitbox*);
 
 	void update();
 	void draw(SDL_Renderer*);

@@ -16,9 +16,9 @@ public:
 
 	bool fixed = false;
 
-	void push(const vector&);
-	void move(const vector&);
-	void moveTo(const vector&);
+	void push(const vector);
+	void move(const vector);
+	void moveTo(const vector);
 	
 	bool collidesWith(const obj&, vector*, vector*, int*) const;
 
