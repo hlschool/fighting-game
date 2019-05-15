@@ -1,9 +1,13 @@
 #include "character.h"
 #include "constants.h"
 #include <iostream>;
+#include <SDL_ttf.h>
 
 character::character() {
+	HP = 100;
 	attacking = NOTHING;
+	TTF_Init();
+	Sans = TTF_OpenFont("OpenSans-Bold.ttf", 24);
 	setFighter();
 }
 
@@ -17,6 +21,11 @@ void character::hit(int stun, int damage, const vector knockback) {
 	stun_count = 0;
 	stunned = true;
 	push(knockback);
+	HP -= damage;
+	if(HP <= 0) {
+		HP = 0;
+		stun_frames = -1;
+	}
 }
 
 void character::control(const vector v) {
@@ -121,7 +130,7 @@ void character::update() {
 	if (stunned && stun_count < stun_frames) {
 		stun_count++;
 	}
-	if (stunned && stun_count >= stun_frames) {
+	if (stunned && stun_count == stun_frames) {
 		stun_count = 0;
 		stunned = false;
 		delay_count = 0;
@@ -132,6 +141,16 @@ void character::update() {
 }
 
 void character::draw(SDL_Renderer* renderer) {
+	//HP
+	string health_string = to_string((int) HP);
+	const char* health_char = health_string.c_str();
+	SDL_Surface* message_surf = TTF_RenderText_Solid(Sans, health_char, { 255, (Uint8) (HP * 255 / 100), (Uint8) (HP * 255 / 100) });
+	SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, message_surf);
+	SDL_Rect message_rect = { pos.x, pos.y - message_surf->h, message_surf->w, message_surf->h };
+	SDL_FreeSurface(message_surf);
+	SDL_RenderCopy(renderer, message, NULL, &message_rect);
+
+	//Img
 	SDL_Rect fillRect = { pos.x, pos.y, w, h };
 	texture = SDL_CreateTextureFromSurface(renderer, surface);
 	SDL_RenderCopyEx(renderer, texture, NULL, &fillRect, 0, NULL, (flipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE));

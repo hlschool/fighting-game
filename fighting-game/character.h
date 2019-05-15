@@ -5,6 +5,7 @@
 #include "SDL_image.h"
 #include "hitbox.h"
 #include "constants.h"
+#include <SDL_ttf.h>
 enum move_types {
 	AERIAL,
 	JAB,
@@ -38,6 +39,7 @@ public:
 
 	SDL_Texture* texture;
 	SDL_Surface* surface;
+	TTF_Font *Sans;
 
 	bool flipped = false;
 
