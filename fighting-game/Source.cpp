@@ -18,6 +18,8 @@ and may not be redistributed without written permission.*/
 #include "character.h"
 using namespace std;
 
+void renderText(SDL_Renderer*, TTF_Font* font, string, const vector, SDL_Color, int, int);
+
 //Screen dimension constants
 const int width = 1080;
 const int height = 720;
@@ -27,7 +29,8 @@ const double spf = 1 / (double)fps_lock;
 
 const vector grav_acc = { 0, 0.3 };
 
-const SDL_Color white = { 255, 255, 255 }; //asdasdasdasdasdasdasdasdasdasdassdfgdfgfdgdfgdefjgldisfjhglksdjfhgldksjfhglkjdsfhgkdjshlgkjsdlhksdjfhlgkj
+const SDL_Color white = { 255, 255, 255 };
+const SDL_Color blue = { 0, 0, 255 };//asdasdasdasdasdasdasdasdasdasdassdfgdfgfdgdfgdefjgldisfjhglksdjfhgldksjfhglkjdsfhgkdjshlgkjsdlhksdjfhlgkj
 
 int main(int argc, char* args[])
 {
@@ -36,6 +39,8 @@ int main(int argc, char* args[])
 
 	//The renderer which draws shapes
 	SDL_Renderer* gRenderer = NULL;
+
+	TTF_Font* Sans;
 
 	int frames = 0;
 	int fps_count = 0;
@@ -90,8 +95,8 @@ int main(int argc, char* args[])
 			playing_field.setBackground(background);
 			playing_field.setGravity(grav_acc);
 
-			playing_field.addCharacter(fighter_1);
-			playing_field.addCharacter(fighter_2);
+			/*playing_field.addCharacter(fighter_1);
+			playing_field.addCharacter(fighter_2);*/
 
 			playing_field.addPlatform(floor);
 			playing_field.addPlatform(pl1);
@@ -99,7 +104,9 @@ int main(int argc, char* args[])
 			playing_field.addPlatform(left_wall);
 
 			TTF_Init();
-			TTF_Font* Sans = TTF_OpenFont("OpenSans-Bold.ttf", 24);
+			Sans = TTF_OpenFont("OpenSans-Bold.ttf", 40);
+
+			
 
 			bool hold_right_1 = false;
 			bool hold_left_1 = false;
@@ -108,8 +115,14 @@ int main(int argc, char* args[])
 			//Main loop
 			SDL_Event evt;
 			bool programrunning = true;
+
+			bool menu = true;
+			bool menu_1 = true;
+			int menu_select = 0;
+
 			while (programrunning)
 			{
+
 				auto start = chrono::high_resolution_clock::now();
 
 				while (SDL_PollEvent(&evt)) {
@@ -118,50 +131,66 @@ int main(int argc, char* args[])
 					
 					if (evt.type == SDL_KEYDOWN && evt.key.repeat == 0) {
 
-						//steve_1
-						if (evt.key.keysym.sym == SDLK_w && playing_field.hitsPlatform(*fighter_1, nullptr, nullptr, nullptr)) {
-							fighter_1->push({ 0, -9 });
-						}
-						else if (evt.key.keysym.sym == SDLK_g && !playing_field.hitsGround(*fighter_1)) {
-							fighter_1->startAttack(AERIAL);
-						}
-						else if (evt.key.keysym.sym == SDLK_a) {
-							hold_left_1 = true;
-						}
-						else if (evt.key.keysym.sym == SDLK_d) {
-							hold_right_1 = true;
-						}
 
-						//steve_2
-						if (evt.key.keysym.sym == SDLK_UP && playing_field.hitsPlatform(*fighter_2, nullptr, nullptr, nullptr)) {
-							fighter_2->push({ 0, -9 });
+						if (menu) {
+							if (evt.key.keysym.sym == SDLK_w && menu_select != 0) {
+								menu_select--;
+							}
+							else if (evt.key.keysym.sym == SDLK_s && menu_select != 2) {
+								menu_select++;
+							}
 						}
-						else if (evt.key.keysym.sym == SDLK_KP_0 && !playing_field.hitsGround(*fighter_2)) {
-							fighter_2->startAttack(AERIAL);
-						}
-						else if (evt.key.keysym.sym == SDLK_LEFT) {
-							hold_left_2 = true;
-						}
-						else if (evt.key.keysym.sym == SDLK_RIGHT) {
-							hold_right_2 = true;
+						else {
+							//steve_1
+							if (evt.key.keysym.sym == SDLK_w && playing_field.hitsPlatform(*fighter_1, nullptr, nullptr, nullptr)) {
+								fighter_1->push({ 0, -9 });
+							}
+							else if (evt.key.keysym.sym == SDLK_g && !playing_field.hitsGround(*fighter_1)) {
+								fighter_1->startAttack(AERIAL);
+							}
+							else if (evt.key.keysym.sym == SDLK_a) {
+								hold_left_1 = true;
+							}
+							else if (evt.key.keysym.sym == SDLK_d) {
+								hold_right_1 = true;
+							}
+
+							//steve_2
+							if (evt.key.keysym.sym == SDLK_UP && playing_field.hitsPlatform(*fighter_2, nullptr, nullptr, nullptr)) {
+								fighter_2->push({ 0, -9 });
+							}
+							else if (evt.key.keysym.sym == SDLK_KP_0 && !playing_field.hitsGround(*fighter_2)) {
+								fighter_2->startAttack(AERIAL);
+							}
+							else if (evt.key.keysym.sym == SDLK_LEFT) {
+								hold_left_2 = true;
+							}
+							else if (evt.key.keysym.sym == SDLK_RIGHT) {
+								hold_right_2 = true;
+							}
 						}
 					}
 					if (evt.type == SDL_KEYUP && evt.key.repeat == 0) {
 
-						//steve_1
-						if (evt.key.keysym.sym == SDLK_a) {
-							hold_left_1 = false;
-						}
-						else if (evt.key.keysym.sym == SDLK_d) {
-							hold_right_1 = false;
-						}
+						if (menu) {
 
-						//steve_2
-						if (evt.key.keysym.sym == SDLK_LEFT) {
-							hold_left_2 = false;
 						}
-						else if (evt.key.keysym.sym == SDLK_RIGHT) {
-							hold_right_2 = false;
+						else {
+							//steve_1
+							if (evt.key.keysym.sym == SDLK_a) {
+								hold_left_1 = false;
+							}
+							else if (evt.key.keysym.sym == SDLK_d) {
+								hold_right_1 = false;
+							}
+
+							//steve_2
+							if (evt.key.keysym.sym == SDLK_LEFT) {
+								hold_left_2 = false;
+							}
+							else if (evt.key.keysym.sym == SDLK_RIGHT) {
+								hold_right_2 = false;
+							}
 						}
 					}
 					
@@ -177,15 +206,18 @@ int main(int argc, char* args[])
 
 				playing_field.update();
 				playing_field.draw(gRenderer);
+				
+				if (menu) {
+					renderText(gRenderer, Sans, "Menu", { (width / 2) - 100, 100 }, white, 200, 100);
+					if (menu_1) {
+						renderText(gRenderer, Sans, "Character Select", { (width / 2) - 100, 225 }, ((menu_select == 0) ? blue : white), 150, 100);
+						renderText(gRenderer, Sans, "Stage Select", { (width / 2) - 100, 300 }, ((menu_select == 1) ? blue : white), 150, 100);
+						renderText(gRenderer, Sans, "High Scores", { (width / 2) - 100, 375 }, ((menu_select == 2) ? blue : white), 150, 100);
+					}
+				}
 
 				//FPS counter
-				string fps_string = to_string(fps_count);
-				const char* fps_char = fps_string.c_str();
-				SDL_Surface* message_surf = TTF_RenderText_Solid(Sans, fps_char, white);
-				SDL_Texture* message = SDL_CreateTextureFromSurface(gRenderer, message_surf);
-				SDL_FreeSurface(message_surf);
-				SDL_Rect message_rect = { 0, 0, 100, 100 };
-				SDL_RenderCopy(gRenderer, message, NULL, &message_rect);
+				renderText(gRenderer, Sans, to_string(fps_count), { 0, 0 }, white, 100, 100);
 
 				//Update the surface
 				SDL_RenderPresent(gRenderer);
@@ -214,4 +246,15 @@ int main(int argc, char* args[])
 
 	return 0;
 }
+
+void renderText(SDL_Renderer* renderer, TTF_Font* font, string message, const vector pos, SDL_Color color, int w, int h) {
+	const char* message_char = message.c_str();
+	SDL_Surface* message_surf = TTF_RenderText_Solid(font, message_char, color);
+	SDL_Texture* message_texture = SDL_CreateTextureFromSurface(renderer, message_surf);
+	SDL_FreeSurface(message_surf);
+	SDL_Rect message_rect = { pos.x, pos.y, w, h };
+	SDL_RenderCopy(renderer, message_texture, NULL, &message_rect);
+}
+
+
 
