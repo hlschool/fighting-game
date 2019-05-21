@@ -7,6 +7,9 @@ using namespace std;
 
 class constants {
 public:
+	const static int screen_width;
+	const static int screen_height;
+
 	const static string fighter_img_path;
 	const static int fighter_img_w;
 	const static int fighter_img_h;

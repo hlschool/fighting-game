@@ -126,6 +126,7 @@
     <ClCompile Include="constants.cpp" />
     <ClCompile Include="field.cpp" />
     <ClCompile Include="hitbox.cpp" />
+    <ClCompile Include="menu.cpp" />
     <ClCompile Include="obj.cpp" />
     <ClCompile Include="platform.cpp" />
     <ClCompile Include="rectangle.cpp" />
@@ -138,11 +139,13 @@
     <ClInclude Include="constants.h" />
     <ClInclude Include="hitbox.h" />
     <ClInclude Include="linkedList.h" />
+    <ClInclude Include="menu.h" />
     <ClInclude Include="move.h" />
     <ClInclude Include="moveset.h" />
     <ClInclude Include="obj.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="rectangle.h" />
+    <ClInclude Include="rendering.h" />
     <ClInclude Include="vector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

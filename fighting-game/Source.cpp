@@ -16,13 +16,13 @@ and may not be redistributed without written permission.*/
 #include "platform.h"
 #include "SDL_image.h"
 #include "character.h"
+#include "menu.h"
+#include "rendering.h"
 using namespace std;
 
-void renderText(SDL_Renderer*, TTF_Font* font, string, const vector, SDL_Color, int, int);
-
 //Screen dimension constants
-const int width = 1080;
-const int height = 720;
+const int width = constants::screen_width;
+const int height = constants::screen_height;
 
 const int fps_lock = 60;
 const double spf = 1 / (double)fps_lock;
@@ -40,6 +40,7 @@ int main(int argc, char* args[])
 	//The renderer which draws shapes
 	SDL_Renderer* gRenderer = NULL;
 
+	TTF_Init();
 	TTF_Font* Sans;
 
 	int frames = 0;
@@ -106,7 +107,7 @@ int main(int argc, char* args[])
 			TTF_Init();
 			Sans = TTF_OpenFont("OpenSans-Bold.ttf", 40);
 
-			
+			menu menu;
 
 			bool hold_right_1 = false;
 			bool hold_left_1 = false;
@@ -116,9 +117,7 @@ int main(int argc, char* args[])
 			SDL_Event evt;
 			bool programrunning = true;
 
-			bool menu = true;
-			bool menu_1 = true;
-			int menu_select = 0;
+			bool in_menu = true;
 
 			while (programrunning)
 			{
@@ -132,12 +131,16 @@ int main(int argc, char* args[])
 					if (evt.type == SDL_KEYDOWN && evt.key.repeat == 0) {
 
 
-						if (menu) {
-							if (evt.key.keysym.sym == SDLK_w && menu_select != 0) {
-								menu_select--;
+						if (in_menu) {
+							if (evt.key.keysym.sym == SDLK_w && menu.menu_selector != 0) {
+								menu.menu_selector--;
 							}
-							else if (evt.key.keysym.sym == SDLK_s && menu_select != 2) {
-								menu_select++;
+							else if (evt.key.keysym.sym == SDLK_s && menu.menu_selector != menu.menu_max) {
+								menu.menu_selector++;
+							}
+							if (evt.key.keysym.sym == SDLK_g)
+							{
+								menu.menu_select = menu.menu_selector;
 							}
 						}
 						else {
@@ -172,7 +175,7 @@ int main(int argc, char* args[])
 					}
 					if (evt.type == SDL_KEYUP && evt.key.repeat == 0) {
 
-						if (menu) {
+						if (in_menu) {
 
 						}
 						else {
@@ -206,18 +209,11 @@ int main(int argc, char* args[])
 
 				playing_field.update();
 				playing_field.draw(gRenderer);
-				
-				if (menu) {
-					renderText(gRenderer, Sans, "Menu", { (width / 2) - 100, 100 }, white, 200, 100);
-					if (menu_1) {
-						renderText(gRenderer, Sans, "Character Select", { (width / 2) - 100, 225 }, ((menu_select == 0) ? blue : white), 150, 100);
-						renderText(gRenderer, Sans, "Stage Select", { (width / 2) - 100, 300 }, ((menu_select == 1) ? blue : white), 150, 100);
-						renderText(gRenderer, Sans, "High Scores", { (width / 2) - 100, 375 }, ((menu_select == 2) ? blue : white), 150, 100);
-					}
-				}
+
+				menu.draw(gRenderer);
 
 				//FPS counter
-				renderText(gRenderer, Sans, to_string(fps_count), { 0, 0 }, white, 100, 100);
+				renderText(gRenderer, Sans, to_string(fps_count), { 0, 0 }, white);
 
 				//Update the surface
 				SDL_RenderPresent(gRenderer);
@@ -245,15 +241,6 @@ int main(int argc, char* args[])
 	SDL_Quit();
 
 	return 0;
-}
-
-void renderText(SDL_Renderer* renderer, TTF_Font* font, string message, const vector pos, SDL_Color color, int w, int h) {
-	const char* message_char = message.c_str();
-	SDL_Surface* message_surf = TTF_RenderText_Solid(font, message_char, color);
-	SDL_Texture* message_texture = SDL_CreateTextureFromSurface(renderer, message_surf);
-	SDL_FreeSurface(message_surf);
-	SDL_Rect message_rect = { pos.x, pos.y, w, h };
-	SDL_RenderCopy(renderer, message_texture, NULL, &message_rect);
 }
 
 
