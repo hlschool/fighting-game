@@ -5,24 +5,35 @@ const string constants::fighter_img_path = "FighterTest.png";
 const int constants::fighter_img_w = 78;
 const int constants::fighter_img_h = 117;
 
-//const int constants::fighter_aerial_hitbox_h;
-//const vector constants::fighter_aerial_right_pos;
-//const vector constants::fighter_aerial_left_pos;
-//const int constants::fighter_aerial_damage;
-//const vector constants::fighter_aerial_knockback;
-//const int constants::fighter_aerial_buffer;
-//const int constants::fighter_aerial_delay;
-//const int constants::fighter_aerial_stun;
+const int constants::fighter_aerial_hitbox_w = 80;
+const int constants::fighter_aerial_hitbox_h = 119;
+const vector constants::fighter_aerial_right_pos = { (float)0, (float)0 };
+const vector constants::fighter_aerial_left_pos = { (float)0, (float)0 };
+const int constants::fighter_aerial_damage = 5;
+const vector constants::fighter_aerial_knockback = { 2, -2 };
+const int constants::fighter_aerial_buffer = 10;
+const int constants::fighter_aerial_delay = 0;
+const int constants::fighter_aerial_stun = 20;
 
 const int constants::fighter_jab_hitbox_w = 70;
 const int constants::fighter_jab_hitbox_h = 20;
 const vector constants::fighter_jab_right_pos = { (float) fighter_img_w, (float) (fighter_img_h / 2) - (constants::fighter_jab_hitbox_h / 2) };
 const vector constants::fighter_jab_left_pos = { 0 - constants::fighter_jab_hitbox_w, (float) (fighter_img_h / 2) - (constants::fighter_jab_hitbox_h / 2) };
-const int constants::fighter_jab_damage = 30;
-const vector constants::fighter_jab_knockback = { 5, -5 };
+const int constants::fighter_jab_damage = 10;
+const vector constants::fighter_jab_knockback = { 2, -2 };
 const int constants::fighter_jab_buffer = 60;
 const int constants::fighter_jab_delay = 0;
 const int constants::fighter_jab_stun = 20;
+
+const int constants::fighter_dash_hitbox_w = 80;
+const int constants::fighter_dash_hitbox_h = 119;
+const vector constants::fighter_dash_right_pos = { (float)0, (float)0 };
+const vector constants::fighter_dash_left_pos = { (float)0, (float)0 };
+const int constants::fighter_dash_damage = 8;
+const vector constants::fighter_dash_knockback = { 2, -2 };
+const int constants::fighter_dash_buffer = 10;
+const int constants::fighter_dash_delay = 0;
+const int constants::fighter_dash_stun = 20;
 
 //const int constants::fighter_dash_hitbox_w;
 //const int constants::fighter_dash_hitbox_h;

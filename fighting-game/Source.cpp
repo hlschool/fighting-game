@@ -105,12 +105,15 @@ int main(int argc, char* args[])
 			bool hold_left_1 = false;
 			bool hold_right_2 = false;
 			bool hold_left_2 = false;
+			bool hold_attack_2 = false;
 			//Main loop
 			SDL_Event evt;
 			bool programrunning = true;
 			while (programrunning)
 			{
 				auto start = chrono::high_resolution_clock::now();
+
+				const Uint8 *state = SDL_GetKeyboardState(NULL);
 
 				while (SDL_PollEvent(&evt)) {
 					if (evt.type == SDL_QUIT)
@@ -122,8 +125,15 @@ int main(int argc, char* args[])
 						if (evt.key.keysym.sym == SDLK_w && playing_field.hitsPlatform(*fighter_1, nullptr, nullptr, nullptr)) {
 							fighter_1->push({ 0, -9 });
 						}
+						else if(evt.key.keysym.sym == SDLK_g && (state[SDL_SCANCODE_D] || state[SDL_SCANCODE_A]))
+						{
+							fighter_1->startAttack(DASH);
+						}
 						else if (evt.key.keysym.sym == SDLK_g && !playing_field.hitsGround(*fighter_1)) {
 							fighter_1->startAttack(AERIAL);
+						}
+						else if (evt.key.keysym.sym == SDLK_g && playing_field.hitsGround(*fighter_1)) {
+							fighter_1->startAttack(JAB);
 						}
 						else if (evt.key.keysym.sym == SDLK_a) {
 							hold_left_1 = true;
@@ -136,15 +146,29 @@ int main(int argc, char* args[])
 						if (evt.key.keysym.sym == SDLK_UP && playing_field.hitsPlatform(*fighter_2, nullptr, nullptr, nullptr)) {
 							fighter_2->push({ 0, -9 });
 						}
+						else if (evt.key.keysym.sym == SDLK_KP_0 && (state[SDL_SCANCODE_LEFT] || state[SDL_SCANCODE_RIGHT]))
+						{
+							fighter_2->startAttack(DASH);
+						}
 						else if (evt.key.keysym.sym == SDLK_KP_0 && !playing_field.hitsGround(*fighter_2)) {
 							fighter_2->startAttack(AERIAL);
 						}
+						else if (evt.key.keysym.sym == SDLK_KP_0 && playing_field.hitsGround(*fighter_2)) {
+							fighter_2->startAttack(JAB);
+						}
 						else if (evt.key.keysym.sym == SDLK_LEFT) {
 							hold_left_2 = true;
+							if (evt.key.keysym.sym == SDLK_KP_0 && playing_field.hitsGround(*fighter_2)) {
+								fighter_2->startAttack(JAB);
+							}
 						}
 						else if (evt.key.keysym.sym == SDLK_RIGHT) {
 							hold_right_2 = true;
 						}
+						else if (evt.key.keysym.sym == SDLK_KP_0) {
+							hold_attack_2 = true;
+						}
+
 					}
 					if (evt.type == SDL_KEYUP && evt.key.repeat == 0) {
 
