@@ -96,8 +96,8 @@ int main(int argc, char* args[])
 			playing_field.setBackground(background);
 			playing_field.setGravity(grav_acc);
 
-			/*playing_field.addCharacter(fighter_1);
-			playing_field.addCharacter(fighter_2);*/
+			playing_field.addCharacter(fighter_1);
+			playing_field.addCharacter(fighter_2);
 
 			playing_field.addPlatform(floor);
 			playing_field.addPlatform(pl1);
@@ -118,7 +118,7 @@ int main(int argc, char* args[])
 			SDL_Event evt;
 			bool programrunning = true;
 
-			bool in_menu = true;
+			bool in_menu = false;
 
 			while (programrunning)
 			{
@@ -133,58 +133,69 @@ int main(int argc, char* args[])
 					
 					if (evt.type == SDL_KEYDOWN && evt.key.repeat == 0) {
 
-						//steve_1
-						if (evt.key.keysym.sym == SDLK_w && playing_field.hitsPlatform(*fighter_1, nullptr, nullptr, nullptr)) {
-							fighter_1->push({ 0, -9 });
-						}
-						else if(evt.key.keysym.sym == SDLK_g && (state[SDL_SCANCODE_D] || state[SDL_SCANCODE_A]))
-						{
-							fighter_1->startAttack(DASH);
-						}
-						else if (evt.key.keysym.sym == SDLK_g && !playing_field.hitsGround(*fighter_1)) {
-							fighter_1->startAttack(AERIAL);
-						}
-						else if (evt.key.keysym.sym == SDLK_g && playing_field.hitsGround(*fighter_1)) {
-							fighter_1->startAttack(JAB);
-						}
-						else if (evt.key.keysym.sym == SDLK_a) {
-							hold_left_1 = true;
-						}
-						else if (evt.key.keysym.sym == SDLK_d) {
-							hold_right_1 = true;
+						if (evt.key.keysym.sym == SDLK_ESCAPE) {
+							menu.open();
 						}
 
-						//steve_2
-						if (evt.key.keysym.sym == SDLK_UP && playing_field.hitsPlatform(*fighter_2, nullptr, nullptr, nullptr)) {
-							fighter_2->push({ 0, -9 });
+						if (menu.is_active) {
+							menu.handle(evt.key.keysym.sym);
 						}
-						else if (evt.key.keysym.sym == SDLK_KP_0 && (state[SDL_SCANCODE_LEFT] || state[SDL_SCANCODE_RIGHT]))
-						{
-							fighter_2->startAttack(DASH);
-						}
-						else if (evt.key.keysym.sym == SDLK_KP_0 && !playing_field.hitsGround(*fighter_2)) {
-							fighter_2->startAttack(AERIAL);
-						}
-						else if (evt.key.keysym.sym == SDLK_KP_0 && playing_field.hitsGround(*fighter_2)) {
-							fighter_2->startAttack(JAB);
-						}
-						else if (evt.key.keysym.sym == SDLK_LEFT) {
-							hold_left_2 = true;
-							if (evt.key.keysym.sym == SDLK_KP_0 && playing_field.hitsGround(*fighter_2)) {
+						else {
+
+
+							//steve_1
+							if (evt.key.keysym.sym == SDLK_w && playing_field.hitsPlatform(*fighter_1, nullptr, nullptr, nullptr)) {
+								fighter_1->push({ 0, -9 });
+							}
+							else if (evt.key.keysym.sym == SDLK_g && (state[SDL_SCANCODE_D] || state[SDL_SCANCODE_A]))
+							{
+								fighter_1->startAttack(DASH);
+							}
+							else if (evt.key.keysym.sym == SDLK_g && !playing_field.hitsGround(*fighter_1)) {
+								fighter_1->startAttack(AERIAL);
+							}
+							else if (evt.key.keysym.sym == SDLK_g && playing_field.hitsGround(*fighter_1)) {
+								fighter_1->startAttack(JAB);
+							}
+							else if (evt.key.keysym.sym == SDLK_a) {
+								hold_left_1 = true;
+							}
+							else if (evt.key.keysym.sym == SDLK_d) {
+								hold_right_1 = true;
+							}
+
+							//steve_2
+							if (evt.key.keysym.sym == SDLK_UP && playing_field.hitsPlatform(*fighter_2, nullptr, nullptr, nullptr)) {
+								fighter_2->push({ 0, -9 });
+							}
+							else if (evt.key.keysym.sym == SDLK_KP_0 && (state[SDL_SCANCODE_LEFT] || state[SDL_SCANCODE_RIGHT]))
+							{
+								fighter_2->startAttack(DASH);
+							}
+							else if (evt.key.keysym.sym == SDLK_KP_0 && !playing_field.hitsGround(*fighter_2)) {
+								fighter_2->startAttack(AERIAL);
+							}
+							else if (evt.key.keysym.sym == SDLK_KP_0 && playing_field.hitsGround(*fighter_2)) {
 								fighter_2->startAttack(JAB);
 							}
-						}
-						else if (evt.key.keysym.sym == SDLK_RIGHT) {
-							hold_right_2 = true;
-						}
-						else if (evt.key.keysym.sym == SDLK_KP_0) {
-							hold_attack_2 = true;
+							else if (evt.key.keysym.sym == SDLK_LEFT) {
+								hold_left_2 = true;
+								if (evt.key.keysym.sym == SDLK_KP_0 && playing_field.hitsGround(*fighter_2)) {
+									fighter_2->startAttack(JAB);
+								}
+							}
+							else if (evt.key.keysym.sym == SDLK_RIGHT) {
+								hold_right_2 = true;
+							}
+							else if (evt.key.keysym.sym == SDLK_KP_0) {
+								hold_attack_2 = true;
+							}
 						}
 
 					}
 					if (evt.type == SDL_KEYUP && evt.key.repeat == 0) {
 
-						if (in_menu) {
+						if (menu.is_active) {
 
 						}
 						else {
@@ -216,13 +227,15 @@ int main(int argc, char* args[])
 				if (hold_right_2)
 					fighter_2->control({ 10, 0 });
 
-				playing_field.update();
-				playing_field.draw(gRenderer);
+				if (!menu.is_active) {
+					playing_field.update();
+				}
 
+				playing_field.draw(gRenderer);
 				menu.draw(gRenderer);
 
 				//FPS counter
-				renderText(gRenderer, Sans, to_string(fps_count), { 0, 0 }, white);
+				renderText(gRenderer, Sans, to_string(fps_count), { 30, 30 }, white);
 
 				//Update the surface
 				SDL_RenderPresent(gRenderer);

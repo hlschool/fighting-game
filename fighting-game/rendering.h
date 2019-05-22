@@ -16,4 +16,13 @@ static void renderText(SDL_Renderer* renderer, TTF_Font* font, string message, c
 	SDL_RenderCopy(renderer, message_texture, NULL, &message_rect);
 }
 
+static void renderImage(SDL_Renderer* renderer, string path, const vector pos) {
+	SDL_Surface* surface = IMG_Load(path.c_str());
+	SDL_Rect fillRect = { pos.x, pos.y, surface->w, surface->h };
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+	SDL_RenderCopy(renderer, texture, NULL, &fillRect);
+}
+
+
+
 #endif

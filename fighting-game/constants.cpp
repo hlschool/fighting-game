@@ -58,7 +58,7 @@ const int constants::fighter_dash_stun = 20;
 //const int constants::fighter_special_delay;
 //const int constants::fighter_special_stun;
 //
-//const string constants::steve_img_path;
+const string constants::steve_img_path = "guy.png";
 //const int constants::steve_img_w;
 //const int constants::steve_img_h;
 //
