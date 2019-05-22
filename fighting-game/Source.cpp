@@ -16,18 +16,21 @@ and may not be redistributed without written permission.*/
 #include "platform.h"
 #include "SDL_image.h"
 #include "character.h"
+#include "menu.h"
+#include "rendering.h"
 using namespace std;
 
 //Screen dimension constants
-const int width = 1080;
-const int height = 720;
+const int width = constants::screen_width;
+const int height = constants::screen_height;
 
 const int fps_lock = 60;
 const double spf = 1 / (double)fps_lock;
 
 const vector grav_acc = { 0, 0.3 };
 
-const SDL_Color white = { 255, 255, 255 }; //asdasdasdasdasdasdasdasdasdasdassdfgdfgfdgdfgdefjgldisfjhglksdjfhgldksjfhglkjdsfhgkdjshlgkjsdlhksdjfhlgkj
+const SDL_Color white = { 255, 255, 255 };
+const SDL_Color blue = { 0, 0, 255 };//asdasdasdasdasdasdasdasdasdasdassdfgdfgfdgdfgdefjgldisfjhglksdjfhgldksjfhglkjdsfhgkdjshlgkjsdlhksdjfhlgkj
 
 int main(int argc, char* args[])
 {
@@ -36,6 +39,9 @@ int main(int argc, char* args[])
 
 	//The renderer which draws shapes
 	SDL_Renderer* gRenderer = NULL;
+
+	TTF_Init();
+	TTF_Font* Sans;
 
 	int frames = 0;
 	int fps_count = 0;
@@ -90,8 +96,8 @@ int main(int argc, char* args[])
 			playing_field.setBackground(background);
 			playing_field.setGravity(grav_acc);
 
-			playing_field.addCharacter(fighter_1);
-			playing_field.addCharacter(fighter_2);
+			/*playing_field.addCharacter(fighter_1);
+			playing_field.addCharacter(fighter_2);*/
 
 			playing_field.addPlatform(floor);
 			playing_field.addPlatform(pl1);
@@ -99,7 +105,9 @@ int main(int argc, char* args[])
 			playing_field.addPlatform(left_wall);
 
 			TTF_Init();
-			TTF_Font* Sans = TTF_OpenFont("OpenSans-Bold.ttf", 24);
+			Sans = TTF_OpenFont("OpenSans-Bold.ttf", 40);
+
+			menu menu;
 
 			bool hold_right_1 = false;
 			bool hold_left_1 = false;
@@ -109,8 +117,12 @@ int main(int argc, char* args[])
 			//Main loop
 			SDL_Event evt;
 			bool programrunning = true;
+
+			bool in_menu = true;
+
 			while (programrunning)
 			{
+
 				auto start = chrono::high_resolution_clock::now();
 
 				const Uint8 *state = SDL_GetKeyboardState(NULL);
@@ -172,20 +184,25 @@ int main(int argc, char* args[])
 					}
 					if (evt.type == SDL_KEYUP && evt.key.repeat == 0) {
 
-						//steve_1
-						if (evt.key.keysym.sym == SDLK_a) {
-							hold_left_1 = false;
-						}
-						else if (evt.key.keysym.sym == SDLK_d) {
-							hold_right_1 = false;
-						}
+						if (in_menu) {
 
-						//steve_2
-						if (evt.key.keysym.sym == SDLK_LEFT) {
-							hold_left_2 = false;
 						}
-						else if (evt.key.keysym.sym == SDLK_RIGHT) {
-							hold_right_2 = false;
+						else {
+							//steve_1
+							if (evt.key.keysym.sym == SDLK_a) {
+								hold_left_1 = false;
+							}
+							else if (evt.key.keysym.sym == SDLK_d) {
+								hold_right_1 = false;
+							}
+
+							//steve_2
+							if (evt.key.keysym.sym == SDLK_LEFT) {
+								hold_left_2 = false;
+							}
+							else if (evt.key.keysym.sym == SDLK_RIGHT) {
+								hold_right_2 = false;
+							}
 						}
 					}
 					
@@ -202,14 +219,10 @@ int main(int argc, char* args[])
 				playing_field.update();
 				playing_field.draw(gRenderer);
 
+				menu.draw(gRenderer);
+
 				//FPS counter
-				string fps_string = to_string(fps_count);
-				const char* fps_char = fps_string.c_str();
-				SDL_Surface* message_surf = TTF_RenderText_Solid(Sans, fps_char, white);
-				SDL_Texture* message = SDL_CreateTextureFromSurface(gRenderer, message_surf);
-				SDL_FreeSurface(message_surf);
-				SDL_Rect message_rect = { 0, 0, 100, 100 };
-				SDL_RenderCopy(gRenderer, message, NULL, &message_rect);
+				renderText(gRenderer, Sans, to_string(fps_count), { 0, 0 }, white);
 
 				//Update the surface
 				SDL_RenderPresent(gRenderer);
@@ -238,4 +251,6 @@ int main(int argc, char* args[])
 
 	return 0;
 }
+
+
 

@@ -1,7 +1,10 @@
 #include "constants.h"
 using namespace std;
 
-const string constants::fighter_img_path = "FighterTest.png";
+const int constants::screen_width = 1080;
+const int constants::screen_height = 720;
+
+const string constants::fighter_img_path = "HernandezFighter.png";
 const int constants::fighter_img_w = 78;
 const int constants::fighter_img_h = 117;
 
