@@ -21,6 +21,9 @@ public:
 	void addPlatform(platform*);
 	void addHitbox(hitbox*);
 	void addCharacter(character*);
+	character* getPlayer1();
+	character* getPlayer2();
+	void reset();
 	void setBackground(const rectangle&);
 	void setGravity(const vector&);
 

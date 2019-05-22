@@ -18,12 +18,6 @@ void menu::draw(SDL_Renderer* renderer) {
 			renderText(renderer, Sans, "Exit", { (float)(constants::screen_width / 2), 450 }, ((p1_selector == 3) ? blue : white));
 			break;
 		case CHARACTER_SELECT:
-			if (p1_character == HERNANDEZ) {
-				renderImage(renderer, constants::fighter_img_path, { 0, 0 });
-			}
-			else {
-				renderImage(renderer, constants::steve_img_path, { 0, 0 });
-			}
 			renderText(renderer, Sans, ">", { (float)(constants::screen_width * 0.25), 417 }, ((p1_selector == 0) ? blue : white));
 			renderText(renderer, Sans, "Start", { (float)(constants::screen_width * 0.5), 492 }, ((p1_selector == 1) ? blue : white));
 			renderText(renderer, Sans, ">", { (float)(constants::screen_width * 0.75), 417 }, ((p2_selector == 0) ? red : white));
@@ -39,7 +33,7 @@ void menu::draw(SDL_Renderer* renderer) {
 	}
 }
 
-void menu::handle(int key) {
+void menu::handle(int key, field* f, bool* running) {
 	if (key == SDLK_w && p1_selector != 0) {
 		p1_selector--;
 	} else if (key == SDLK_s && p1_selector < p1_menu_max) {
@@ -55,23 +49,42 @@ void menu::handle(int key) {
 			case 0:
 				p1_menu_max = 1;
 				screen = CHARACTER_SELECT;
+				f->getPlayer1()->setFighter();
+				f->getPlayer2()->setFighter();
+				f->getPlayer1()->HP = 100;
+				f->getPlayer2()->HP = 100;
+				f->getPlayer1()->moveTo({ (float)(constants::screen_width * 0.2), 255 });
+				f->getPlayer2()->moveTo({ (float)(constants::screen_width * 0.8), 255 });
+				f->reset();
 				break;
 			case 1:
+				p1_menu_max = 1;
 				screen = STAGE_SELECT;
 				break;
 			case 2:
 				screen = HIGH_SCORES;
 				break;
+			case 3:
+				*running = false;
 			}
 			break;
 		case CHARACTER_SELECT:
 			switch (p1_selector) {
 			case 0:
-				if (p1_character == HERNANDEZ) p1_character = BUSCEMI;
-				else if(p1_character == BUSCEMI) p1_character = HERNANDEZ;
+				if (p1_character == HERNANDEZ) {
+					f->getPlayer1()->setSteve();
+					p1_character = BUSCEMI;
+				}
+				else if (p1_character == BUSCEMI) {
+					f->getPlayer1()->setFighter();
+					p1_character = HERNANDEZ;
+				}
 				break;
 			case 1:
-				//start game
+				f->getPlayer1()->moveTo({ (float)(constants::screen_width * 0.2), 255 });
+				f->getPlayer2()->moveTo({ (float)(constants::screen_width * 0.8), 255 });
+				f->reset();
+				is_active = false;
 				break;
 			}
 			break;
@@ -81,8 +94,14 @@ void menu::handle(int key) {
 		case CHARACTER_SELECT:
 			switch (p2_selector) {
 			case 0:
-				if (p2_character == HERNANDEZ) p2_character = BUSCEMI;
-				else if (p2_character == BUSCEMI) p2_character = HERNANDEZ;
+				if (p2_character == HERNANDEZ) {
+					f->getPlayer2()->setSteve();
+					p2_character = BUSCEMI;
+				}
+				else if (p2_character == BUSCEMI) {
+					f->getPlayer2()->setFighter();
+					p2_character = HERNANDEZ;
+				}
 				break;
 			}
 		}

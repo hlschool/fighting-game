@@ -26,6 +26,28 @@ void field::addCharacter(character* c) {
 	hitboxes->insertFirst(c->moves.special.hb);
 }
 
+
+character* field::getPlayer1() {
+	return characters->get(0);
+}
+
+character* field::getPlayer2() {
+	return characters->get(1);
+}
+
+void field::reset() {
+	hitboxes->destroy();
+	hitboxes->insertFirst(characters->get(0)->moves.aerial.hb);
+	hitboxes->insertFirst(characters->get(0)->moves.jab.hb);
+	hitboxes->insertFirst(characters->get(0)->moves.dash.hb);
+	hitboxes->insertFirst(characters->get(0)->moves.special.hb);
+	hitboxes->insertFirst(characters->get(1)->moves.aerial.hb);
+	hitboxes->insertFirst(characters->get(1)->moves.jab.hb);
+	hitboxes->insertFirst(characters->get(1)->moves.dash.hb);
+	hitboxes->insertFirst(characters->get(1)->moves.special.hb);
+
+}
+
 void field::setBackground(const rectangle& b) {
 	background = b;
 }

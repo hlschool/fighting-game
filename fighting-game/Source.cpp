@@ -71,10 +71,7 @@ int main(int argc, char* args[])
 			background.setColor(70, 70, 70);
 
 			character *fighter_1 = new character();
-			fighter_1->moveTo({ (width / 2) - (float)(fighter_1->w / 2) - 300 , 0 });
-
 			character *fighter_2 = new character();
-			fighter_2->moveTo({ (width / 2) - (float)(fighter_2->w / 2) + 300 , 0 });
 
 			platform *floor = new platform(width, 70);
 			floor->setColor(35, 35, 35);
@@ -96,8 +93,10 @@ int main(int argc, char* args[])
 			playing_field.setBackground(background);
 			playing_field.setGravity(grav_acc);
 
-			playing_field.addCharacter(fighter_1);
 			playing_field.addCharacter(fighter_2);
+			playing_field.addCharacter(fighter_1);
+			fighter_1->moveTo({ (float)(constants::screen_width * 0.2), 255 });
+			fighter_2->moveTo({ (float)(constants::screen_width * 0.8), 255 });
 
 			playing_field.addPlatform(floor);
 			playing_field.addPlatform(pl1);
@@ -116,11 +115,12 @@ int main(int argc, char* args[])
 			bool hold_attack_2 = false;
 			//Main loop
 			SDL_Event evt;
-			bool programrunning = true;
+			bool* programrunning = new bool;
+			*programrunning = true;
 
 			bool in_menu = false;
 
-			while (programrunning)
+			while (*programrunning)
 			{
 
 				auto start = chrono::high_resolution_clock::now();
@@ -129,7 +129,7 @@ int main(int argc, char* args[])
 
 				while (SDL_PollEvent(&evt)) {
 					if (evt.type == SDL_QUIT)
-						programrunning = false;
+						*programrunning = false;
 					
 					if (evt.type == SDL_KEYDOWN && evt.key.repeat == 0) {
 
@@ -138,7 +138,7 @@ int main(int argc, char* args[])
 						}
 
 						if (menu.is_active) {
-							menu.handle(evt.key.keysym.sym);
+							menu.handle(evt.key.keysym.sym, &playing_field, programrunning);
 						}
 						else {
 

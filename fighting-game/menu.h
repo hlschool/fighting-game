@@ -22,17 +22,16 @@ public:
 	menu_screens screen = MAIN;
 	int p1_selector = 0;
 	int p2_selector = 0;
-	int p1_menu_max = 2;
+	int p1_menu_max = 3;
 	int p2_menu_max = 0;
 	bool is_active = true;
 
 	characters p1_character = HERNANDEZ;
 	characters p2_character = HERNANDEZ;
 
-	void handle(int);
+	void handle(int, field*, bool*);
 	void open();
 	void reset();
-	void start(field*);
 
 	void draw(SDL_Renderer*);
 	menu();

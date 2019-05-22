@@ -30,7 +30,7 @@ public:
 	character();
 
 	void setFighter();
-	//void setSteve();
+	void setSteve();
 
 	moveset moves = { { new hitbox(constants::fighter_jab_hitbox_w, constants::fighter_jab_hitbox_h, constants::fighter_jab_stun, constants::fighter_jab_damage, constants::fighter_jab_knockback), constants::fighter_jab_right_pos, constants::fighter_jab_left_pos, constants::fighter_jab_buffer, constants::fighter_jab_delay },    //Aerial
 					  { new hitbox(constants::fighter_jab_hitbox_w, constants::fighter_jab_hitbox_h, constants::fighter_jab_stun, constants::fighter_jab_damage, constants::fighter_jab_knockback), constants::fighter_jab_right_pos, constants::fighter_jab_left_pos, constants::fighter_jab_buffer, constants::fighter_jab_delay },    //Jab
