@@ -49,8 +49,8 @@ void menu::handle(int key, field* f, bool* running) {
 			case 0:
 				p1_menu_max = 1;
 				screen = CHARACTER_SELECT;
-				f->getPlayer1()->setFighter();
-				f->getPlayer2()->setFighter();
+				f->getPlayer1()->setCharacter(HERNANDEZ);
+				f->getPlayer2()->setCharacter(HERNANDEZ);
 				f->getPlayer1()->HP = 100;
 				f->getPlayer2()->HP = 100;
 				f->getPlayer1()->moveTo({ (float)(constants::screen_width * 0.2), 255 });
@@ -72,11 +72,11 @@ void menu::handle(int key, field* f, bool* running) {
 			switch (p1_selector) {
 			case 0:
 				if (p1_character == HERNANDEZ) {
-					f->getPlayer1()->setSteve();
+					f->getPlayer1()->setCharacter(HERNANDEZ);
 					p1_character = BUSCEMI;
 				}
 				else if (p1_character == BUSCEMI) {
-					f->getPlayer1()->setFighter();
+					f->getPlayer1()->setCharacter(HERNANDEZ);
 					p1_character = HERNANDEZ;
 				}
 				break;
@@ -95,11 +95,11 @@ void menu::handle(int key, field* f, bool* running) {
 			switch (p2_selector) {
 			case 0:
 				if (p2_character == HERNANDEZ) {
-					f->getPlayer2()->setSteve();
+					f->getPlayer1()->setCharacter(HERNANDEZ);
 					p2_character = BUSCEMI;
 				}
 				else if (p2_character == BUSCEMI) {
-					f->getPlayer2()->setFighter();
+					f->getPlayer1()->setCharacter(HERNANDEZ);
 					p2_character = HERNANDEZ;
 				}
 				break;

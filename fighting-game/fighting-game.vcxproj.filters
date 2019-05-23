@@ -68,13 +68,7 @@
     <ClInclude Include="character.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="moveset.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="hitbox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="move.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="constants.h">

@@ -5,18 +5,6 @@
 #include <SDL_ttf.h>
 #include "field.h"
 
-enum menu_screens {
-	MAIN,
-	CHARACTER_SELECT,
-	STAGE_SELECT,
-	HIGH_SCORES
-};
-
-enum characters {
-	HERNANDEZ,
-	BUSCEMI
-};
-
 class menu {
 public:
 	menu_screens screen = MAIN;

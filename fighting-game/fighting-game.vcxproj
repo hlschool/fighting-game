@@ -140,8 +140,6 @@
     <ClInclude Include="hitbox.h" />
     <ClInclude Include="linkedList.h" />
     <ClInclude Include="menu.h" />
-    <ClInclude Include="move.h" />
-    <ClInclude Include="moveset.h" />
     <ClInclude Include="obj.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="rectangle.h" />

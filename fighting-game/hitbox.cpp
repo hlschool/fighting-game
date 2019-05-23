@@ -1,21 +1,23 @@
 #include "hitbox.h"
 #include <iostream>
 
-hitbox::hitbox(int width, int height, int s, int d, vector kb) {
+void hitbox::load(int width, int height, int dam, int s, vector kb, vector p) {
 	w = width;
 	h = height;
-	stun = s;
-	damage = d;
+	damage = dam;
+	stun_frames = s;
 	knockback = kb;
-	r = 255;
-	g = 0; 
-	b = 0;
-	exists = false;
 	frame_counter = 0;
+	exists = true;
+	moveTo(p);
 }
 
-void hitbox::load() {
-	exists = true;
+hitbox::hitbox() {
+	exists = false;
+	pos = { 0, 0 };
+	r = 255;
+	g = 0;
+	b = 0;
 }
 
 void hitbox::update() {

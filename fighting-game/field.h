@@ -11,26 +11,24 @@
 
 class field {
 public:
-	linkedList<character*> *characters;
+	character *p_1;
+	character *p_2;
 	linkedList<platform*> *platforms;
-	linkedList<hitbox*> *hitboxes;
 
 	rectangle background = { 0, 0 };
 	vector gravity = { 0, 0 };
 
 	void addPlatform(platform*);
-	void addHitbox(hitbox*);
-	void addCharacter(character*);
+	void setPlayer1(character*);
+	void setPlayer2(character*);
 	character* getPlayer1();
 	character* getPlayer2();
 	void reset();
 	void setBackground(const rectangle&);
 	void setGravity(const vector&);
 
-	bool collides(const obj&, obj**, int*, int*, int*);
 	bool hitsPlatform(const obj&, platform**, int*, int*);
 	bool hitsGround(const obj&);
-	bool isHit(const character&, hitbox*);
 
 	void update();
 	void draw(SDL_Renderer*);

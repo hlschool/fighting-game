@@ -72,6 +72,12 @@ int main(int argc, char* args[])
 
 			character *fighter_1 = new character();
 			character *fighter_2 = new character();
+			fighter_1->setCharacter(HERNANDEZ);
+			fighter_2->setCharacter(BUSCEMI);
+			fighter_1->moveTo({ (float)(constants::screen_width * 0.2), 255 });
+			fighter_2->moveTo({ (float)(constants::screen_width * 0.8), 255 });
+			fighter_1->flipped = false;
+			fighter_2->flipped = true;
 
 			platform *floor = new platform(width, 70);
 			floor->setColor(35, 35, 35);
@@ -93,10 +99,8 @@ int main(int argc, char* args[])
 			playing_field.setBackground(background);
 			playing_field.setGravity(grav_acc);
 
-			playing_field.addCharacter(fighter_2);
-			playing_field.addCharacter(fighter_1);
-			fighter_1->moveTo({ (float)(constants::screen_width * 0.2), 255 });
-			fighter_2->moveTo({ (float)(constants::screen_width * 0.8), 255 });
+			playing_field.setPlayer1(fighter_1);
+			playing_field.setPlayer2(fighter_2);
 
 			playing_field.addPlatform(floor);
 			playing_field.addPlatform(pl1);
@@ -118,7 +122,7 @@ int main(int argc, char* args[])
 			bool* programrunning = new bool;
 			*programrunning = true;
 
-			bool in_menu = false;
+			//bool in_menu = false;
 
 			while (*programrunning)
 			{
@@ -133,14 +137,14 @@ int main(int argc, char* args[])
 					
 					if (evt.type == SDL_KEYDOWN && evt.key.repeat == 0) {
 
-						if (evt.key.keysym.sym == SDLK_ESCAPE) {
+						/*if (evt.key.keysym.sym == SDLK_ESCAPE) {
 							menu.open();
-						}
+						}*/
 
-						if (menu.is_active) {
-							menu.handle(evt.key.keysym.sym, &playing_field, programrunning);
-						}
-						else {
+						//if (menu.is_active) {
+						//	menu.handle(evt.key.keysym.sym, &playing_field, programrunning);
+						//}
+						//else {
 
 
 							//steve_1
@@ -190,15 +194,15 @@ int main(int argc, char* args[])
 							else if (evt.key.keysym.sym == SDLK_KP_0) {
 								hold_attack_2 = true;
 							}
-						}
+						//}
 
 					}
 					if (evt.type == SDL_KEYUP && evt.key.repeat == 0) {
 
-						if (menu.is_active) {
-
-						}
-						else {
+						//if (menu.is_active) {
+//
+						//}
+						//else {
 							//steve_1
 							if (evt.key.keysym.sym == SDLK_a) {
 								hold_left_1 = false;
@@ -214,7 +218,7 @@ int main(int argc, char* args[])
 							else if (evt.key.keysym.sym == SDLK_RIGHT) {
 								hold_right_2 = false;
 							}
-						}
+						//}
 					}
 					
 				}
@@ -227,12 +231,12 @@ int main(int argc, char* args[])
 				if (hold_right_2)
 					fighter_2->control({ 10, 0 });
 
-				if (!menu.is_active) {
+				//if (!menu.is_active) {
 					playing_field.update();
-				}
+				//}
 
 				playing_field.draw(gRenderer);
-				menu.draw(gRenderer);
+				//menu.draw(gRenderer);
 
 				//FPS counter
 				renderText(gRenderer, Sans, to_string(fps_count), { 30, 30 }, white);
