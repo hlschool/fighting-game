@@ -15,6 +15,7 @@ and may not be redistributed without written permission.*/
 #include "field.h"
 #include "platform.h"
 #include "SDL_image.h"
+#include <SDL_mixer.h>
 #include "character.h"
 #include "menu.h"
 #include "rendering.h"
@@ -47,12 +48,14 @@ int main(int argc, char* args[])
 	int fps_count = 0;
 
 	//Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
 	{
 		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
 	}
 	else
 	{
+		Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+
 		//Create window
 		window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
 		if (window == NULL)
@@ -71,10 +74,14 @@ int main(int argc, char* args[])
 			background.setColor(70, 70, 70);
 
 			character *fighter_1 = new character();
-			fighter_1->moveTo({ (width / 2) - (float)(fighter_1->w / 2) - 300 , 0 });
-
 			character *fighter_2 = new character();
-			fighter_2->moveTo({ (width / 2) - (float)(fighter_2->w / 2) + 300 , 0 });
+			fighter_1->setCharacter(HERNANDEZ);
+			fighter_2->setCharacter(BUSCEMI);
+
+			fighter_1->moveTo({ (float)((constants::screen_width / 2 - 300) - (getImageWidth(fighter_1->type) / 2)), 255 });
+			fighter_2->moveTo({ (float)((constants::screen_width / 2 + 300) - (getImageWidth(fighter_2->type) / 2)), 255 });
+			fighter_1->flipped = false;
+			fighter_2->flipped = true;
 
 			platform *floor = new platform(width, 70);
 			floor->setColor(35, 35, 35);
@@ -96,8 +103,8 @@ int main(int argc, char* args[])
 			playing_field.setBackground(background);
 			playing_field.setGravity(grav_acc);
 
-			/*playing_field.addCharacter(fighter_1);
-			playing_field.addCharacter(fighter_2);*/
+			playing_field.setPlayer1(fighter_1);
+			playing_field.setPlayer2(fighter_2);
 
 			playing_field.addPlatform(floor);
 			playing_field.addPlatform(pl1);
@@ -107,49 +114,57 @@ int main(int argc, char* args[])
 			TTF_Init();
 			Sans = TTF_OpenFont("OpenSans-Bold.ttf", 40);
 
-			menu menu;
+			
 
 			bool hold_right_1 = false;
 			bool hold_left_1 = false;
 			bool hold_right_2 = false;
 			bool hold_left_2 = false;
+			bool hold_attack_2 = false;
 			//Main loop
 			SDL_Event evt;
-			bool programrunning = true;
+			bool* programrunning = new bool;
+			*programrunning = true;
 
-			bool in_menu = true;
+			bool in_menu = false;
+			menu menu(&playing_field, programrunning);
 
-			while (programrunning)
+			while (*programrunning)
 			{
 
 				auto start = chrono::high_resolution_clock::now();
 
+				const Uint8 *state = SDL_GetKeyboardState(NULL);
+
 				while (SDL_PollEvent(&evt)) {
 					if (evt.type == SDL_QUIT)
-						programrunning = false;
+						*programrunning = false;
 					
 					if (evt.type == SDL_KEYDOWN && evt.key.repeat == 0) {
 
+						if (evt.key.keysym.sym == SDLK_ESCAPE) {
+							menu.open();
+						}
 
-						if (in_menu) {
-							if (evt.key.keysym.sym == SDLK_w && menu.menu_selector != 0) {
-								menu.menu_selector--;
-							}
-							else if (evt.key.keysym.sym == SDLK_s && menu.menu_selector != menu.menu_max) {
-								menu.menu_selector++;
-							}
-							if (evt.key.keysym.sym == SDLK_g)
-							{
-								menu.menu_select = menu.menu_selector;
-							}
+						if (menu.is_active) {
+							menu.handle(evt.key.keysym.sym);
 						}
 						else {
+
+
 							//steve_1
 							if (evt.key.keysym.sym == SDLK_w && playing_field.hitsPlatform(*fighter_1, nullptr, nullptr, nullptr)) {
 								fighter_1->push({ 0, -9 });
 							}
+							else if (evt.key.keysym.sym == SDLK_g && (state[SDL_SCANCODE_D] || state[SDL_SCANCODE_A]))
+							{
+								fighter_1->startAttack(DASH);
+							}
 							else if (evt.key.keysym.sym == SDLK_g && !playing_field.hitsGround(*fighter_1)) {
 								fighter_1->startAttack(AERIAL);
+							}
+							else if (evt.key.keysym.sym == SDLK_g && playing_field.hitsGround(*fighter_1)) {
+								fighter_1->startAttack(JAB);
 							}
 							else if (evt.key.keysym.sym == SDLK_a) {
 								hold_left_1 = true;
@@ -162,20 +177,34 @@ int main(int argc, char* args[])
 							if (evt.key.keysym.sym == SDLK_UP && playing_field.hitsPlatform(*fighter_2, nullptr, nullptr, nullptr)) {
 								fighter_2->push({ 0, -9 });
 							}
+							else if (evt.key.keysym.sym == SDLK_KP_0 && (state[SDL_SCANCODE_LEFT] || state[SDL_SCANCODE_RIGHT]))
+							{
+								fighter_2->startAttack(DASH);
+							}
 							else if (evt.key.keysym.sym == SDLK_KP_0 && !playing_field.hitsGround(*fighter_2)) {
 								fighter_2->startAttack(AERIAL);
 							}
+							else if (evt.key.keysym.sym == SDLK_KP_0 && playing_field.hitsGround(*fighter_2)) {
+								fighter_2->startAttack(JAB);
+							}
 							else if (evt.key.keysym.sym == SDLK_LEFT) {
 								hold_left_2 = true;
+								if (evt.key.keysym.sym == SDLK_KP_0 && playing_field.hitsGround(*fighter_2)) {
+									fighter_2->startAttack(JAB);
+								}
 							}
 							else if (evt.key.keysym.sym == SDLK_RIGHT) {
 								hold_right_2 = true;
 							}
+							else if (evt.key.keysym.sym == SDLK_KP_0) {
+								hold_attack_2 = true;
+							}
 						}
+
 					}
 					if (evt.type == SDL_KEYUP && evt.key.repeat == 0) {
 
-						if (in_menu) {
+						if (menu.is_active) {
 
 						}
 						else {
@@ -207,13 +236,15 @@ int main(int argc, char* args[])
 				if (hold_right_2)
 					fighter_2->control({ 10, 0 });
 
-				playing_field.update();
-				playing_field.draw(gRenderer);
+				if (!menu.is_active) {
+					playing_field.update();
+				}
 
+				playing_field.draw(gRenderer);
 				menu.draw(gRenderer);
 
 				//FPS counter
-				renderText(gRenderer, Sans, to_string(fps_count), { 0, 0 }, white);
+				renderText(gRenderer, Sans, to_string(fps_count), { 30, 30 }, white);
 
 				//Update the surface
 				SDL_RenderPresent(gRenderer);
