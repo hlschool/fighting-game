@@ -14,15 +14,15 @@ public:
 	int p2_menu_max = 0;
 	bool is_active = true;
 
-	characters p1_character = HERNANDEZ;
-	characters p2_character = HERNANDEZ;
-
-	void handle(int, field*, bool*);
+	void handle(int);
 	void open();
 	void reset();
 
 	void draw(SDL_Renderer*);
-	menu();
+	menu(field*, bool*);
+
+	field* field_pointer;
+	bool* running_pointer;
 	
 private:
 	const SDL_Color white = { 255, 255, 255 };

@@ -4,7 +4,7 @@ using namespace std;
 const int constants::screen_width = 1080;
 const int constants::screen_height = 720;
 
-const string constants::fighter_img_path = "HernandezFighter.png";
+const string constants::fighter_img_path = "assets/HernandezFighter.png";
 const int constants::fighter_img_w = 78;
 const int constants::fighter_img_h = 117;
 
@@ -48,7 +48,7 @@ const int constants::fighter_special_buffer = 10;
 const int constants::fighter_special_delay = 0;
 const int constants::fighter_special_stun = 20;
 
-const string constants::steve_img_path = "guy.png";
+const string constants::steve_img_path = "assets/SteveFighter.png";
 const int constants::steve_img_w = 78;
 const int constants::steve_img_h = 117;
 
@@ -91,3 +91,14 @@ const vector constants::steve_special_knockback = { 2, -2 };
 const int constants::steve_special_buffer = 10;
 const int constants::steve_special_delay = 0;
 const int constants::steve_special_stun = 20;
+
+const string constants::death_sound = "assets/DeathNoise.wav";
+const string constants::attack_sound_1 = "assets/hit1.wav";
+const string constants::attack_sound_2 = "assets/hit2.wav";
+const string constants::attack_sound_3 = "assets/hit3.wav";
+const string constants::attack_sound_4 = "assets/hit4.wav";
+const string constants::damage_sound_1 = "assets/takeDamage1.wav";
+const string constants::damage_sound_2 = "assets/takeDamage2.wav";
+const string constants::damage_sound_3 = "assets/takeDamage3.wav";
+const string constants::damage_sound_4 = "assets/takeDamage4.wav";
+const string constants::damage_sound_5 = "assets/takeDamage5.wav";

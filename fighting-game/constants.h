@@ -25,6 +25,12 @@ enum move_types {
 	NOTHING
 };
 
+enum sound_types {
+	DEATH,
+	ATTACK,
+	DAMAGE
+};
+
 class constants {
 public:
 	const static int screen_width;
@@ -118,6 +124,16 @@ public:
 	const static int steve_special_delay;
 	const static int steve_special_stun;
 
+	const static string death_sound;
+	const static string attack_sound_1;
+	const static string attack_sound_2;
+	const static string attack_sound_3;
+	const static string attack_sound_4;
+	const static string damage_sound_1;
+	const static string damage_sound_2;
+	const static string damage_sound_3;
+	const static string damage_sound_4;
+	const static string damage_sound_5;
 	
 
 };
@@ -361,6 +377,40 @@ static vector getPos(characters c, move_types m, bool flipped) {
 			return flipped ? constants::steve_dash_left_pos : constants::steve_dash_right_pos;
 		case SPECIAL:
 			return flipped ? constants::steve_special_left_pos : constants::steve_special_right_pos;
+		}
+	}
+}
+
+static string getRandomAudio(sound_types s) {
+	int random = rand();
+	switch (s) {
+	case DEATH:
+		return constants::death_sound;
+	case ATTACK:
+		random = (random % 4) + 1;
+		switch (random) {
+		case 1:
+			return constants::attack_sound_1;
+		case 2:
+			return constants::attack_sound_2;
+		case 3:
+			return constants::attack_sound_3;
+		case 4:
+			return constants::attack_sound_4;
+		}
+	case DAMAGE:
+		random = (random % 4) + 1;
+		switch (random) {
+		case 1:
+			return constants::damage_sound_1;
+		case 2:
+			return constants::damage_sound_2;
+		case 3:
+			return constants::damage_sound_3;
+		case 4:
+			return constants::damage_sound_4;
+		case 5:
+			return constants::damage_sound_5;
 		}
 	}
 }

@@ -1,9 +1,12 @@
 #include "menu.h"
 #include "constants.h"
+#include "field.h"
 #include <SDL.h>
 #include "rendering.h"
 
-menu::menu() {
+menu::menu(field *f, bool* r) {
+	running_pointer = r;
+	field_pointer = f;
 	Sans = TTF_OpenFont("OpenSans-Bold.ttf", 40);
 }
 
@@ -18,9 +21,9 @@ void menu::draw(SDL_Renderer* renderer) {
 			renderText(renderer, Sans, "Exit", { (float)(constants::screen_width / 2), 450 }, ((p1_selector == 3) ? blue : white));
 			break;
 		case CHARACTER_SELECT:
-			renderText(renderer, Sans, ">", { (float)(constants::screen_width * 0.25), 417 }, ((p1_selector == 0) ? blue : white));
+			renderText(renderer, Sans, ">", { (float)(constants::screen_width / 2 - 300), 417 }, ((p1_selector == 0) ? blue : white));
 			renderText(renderer, Sans, "Start", { (float)(constants::screen_width * 0.5), 492 }, ((p1_selector == 1) ? blue : white));
-			renderText(renderer, Sans, ">", { (float)(constants::screen_width * 0.75), 417 }, ((p2_selector == 0) ? red : white));
+			renderText(renderer, Sans, ">", { (float)(constants::screen_width / 2 + 300), 417 }, ((p2_selector == 0) ? red : white));
 			break;
 		case STAGE_SELECT:
 			renderText(renderer, Sans, "1", { (float)(constants::screen_width / 2), 225 }, ((p1_selector == 0) ? blue : white));
@@ -33,7 +36,7 @@ void menu::draw(SDL_Renderer* renderer) {
 	}
 }
 
-void menu::handle(int key, field* f, bool* running) {
+void menu::handle(int key) {
 	if (key == SDLK_w && p1_selector != 0) {
 		p1_selector--;
 	} else if (key == SDLK_s && p1_selector < p1_menu_max) {
@@ -46,44 +49,35 @@ void menu::handle(int key, field* f, bool* running) {
 		switch (screen) {
 		case MAIN:
 			switch (p1_selector) {
-			case 0:
+			case 0: //to CHARACTER_SELECT screen
 				p1_menu_max = 1;
 				screen = CHARACTER_SELECT;
-				f->getPlayer1()->setCharacter(HERNANDEZ);
-				f->getPlayer2()->setCharacter(HERNANDEZ);
-				f->getPlayer1()->HP = 100;
-				f->getPlayer2()->HP = 100;
-				f->getPlayer1()->moveTo({ (float)(constants::screen_width * 0.2), 255 });
-				f->getPlayer2()->moveTo({ (float)(constants::screen_width * 0.8), 255 });
-				f->reset();
+				field_pointer->getPlayer1()->HP = 100;
+				field_pointer->getPlayer2()->HP = 100;
+				field_pointer->getPlayer1()->moveTo({ (float)((constants::screen_width / 2 - 300) - (getImageWidth(field_pointer->getPlayer1()->type) / 2)), 255 });
+				field_pointer->getPlayer2()->moveTo({ (float)((constants::screen_width / 2 + 300) - (getImageWidth(field_pointer->getPlayer2()->type) / 2)), 255 });
 				break;
-			case 1:
+			case 1: //to STAGE_SELECT screen
 				p1_menu_max = 1;
 				screen = STAGE_SELECT;
 				break;
-			case 2:
-				screen = HIGH_SCORES;
+			case 2: //to HIGH_SCORES screen
+				//screen = HIGH_SCORES;
 				break;
-			case 3:
-				*running = false;
+			case 3: //exit
+				*running_pointer = false;
 			}
 			break;
 		case CHARACTER_SELECT:
 			switch (p1_selector) {
-			case 0:
-				if (p1_character == HERNANDEZ) {
-					f->getPlayer1()->setCharacter(HERNANDEZ);
-					p1_character = BUSCEMI;
-				}
-				else if (p1_character == BUSCEMI) {
-					f->getPlayer1()->setCharacter(HERNANDEZ);
-					p1_character = HERNANDEZ;
+			case 0: //cycle character
+				if (field_pointer->getPlayer1()->type == HERNANDEZ) {
+					field_pointer->getPlayer1()->setCharacter(BUSCEMI);
+				} else if (field_pointer->getPlayer1()->type == BUSCEMI) {
+					field_pointer->getPlayer1()->setCharacter(HERNANDEZ);
 				}
 				break;
-			case 1:
-				f->getPlayer1()->moveTo({ (float)(constants::screen_width * 0.2), 255 });
-				f->getPlayer2()->moveTo({ (float)(constants::screen_width * 0.8), 255 });
-				f->reset();
+			case 1: //start game
 				is_active = false;
 				break;
 			}
@@ -94,13 +88,11 @@ void menu::handle(int key, field* f, bool* running) {
 		case CHARACTER_SELECT:
 			switch (p2_selector) {
 			case 0:
-				if (p2_character == HERNANDEZ) {
-					f->getPlayer1()->setCharacter(HERNANDEZ);
-					p2_character = BUSCEMI;
+				if (field_pointer->getPlayer2()->type == HERNANDEZ) {
+					field_pointer->getPlayer2()->setCharacter(BUSCEMI);
 				}
-				else if (p2_character == BUSCEMI) {
-					f->getPlayer1()->setCharacter(HERNANDEZ);
-					p2_character = HERNANDEZ;
+				else if (field_pointer->getPlayer2()->type == BUSCEMI) {
+					field_pointer->getPlayer2()->setCharacter(HERNANDEZ);
 				}
 				break;
 			}
@@ -119,7 +111,5 @@ void menu::reset() {
 	p2_selector = 0;
 	p1_menu_max = 3;
 	p2_menu_max = 0;
-	p1_character = HERNANDEZ;
-	p2_character = HERNANDEZ;
 	screen = MAIN;
 }

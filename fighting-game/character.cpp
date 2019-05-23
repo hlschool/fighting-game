@@ -1,6 +1,7 @@
 #include "character.h"
 #include "constants.h"
 #include <iostream>;
+#include "audio.h"
 #include <SDL_ttf.h>
 
 character::character() {
@@ -13,6 +14,7 @@ character::character() {
 
 void character::startAttack(move_types m) {
 	if (!delayed && !buffered && !stunned)
+		playAudio(getRandomAudio(ATTACK));
 		attack_type = m;
 }
 
@@ -25,6 +27,10 @@ void character::hit(character* c) {
 	if(HP <= 0) {
 		HP = 0;
 		stun_frames = -1;
+		playAudio(getRandomAudio(DEATH));
+	}
+	else {
+		playAudio(getRandomAudio(DAMAGE));
 	}
 }
 
