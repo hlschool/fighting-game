@@ -6,17 +6,17 @@
 class hitbox : public rectangle {
 public:
 
-	void load();
+	void load(int, int, int, int, vector, vector);
 
 	void update();
 	//void draw(SDL_Renderer*);
 
-	hitbox(int, int, int, int, vector);
+	hitbox();
 
 	bool exists;
 
-	int stun;
 	int damage;
+	int stun_frames;
 	vector knockback = { 0, 0 };
 
 	int frame_counter;

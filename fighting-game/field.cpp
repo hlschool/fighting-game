@@ -4,9 +4,9 @@
 #include <iostream>
 
 field::field() {
-	characters = new unorderedLinkedList<character*>;
+	p_1 = new character;
+	p_2 = new character;
 	platforms = new unorderedLinkedList<platform*>;
-	hitboxes = new unorderedLinkedList<hitbox*>;
 	background.fixed = true;
 }
 
@@ -14,16 +14,24 @@ void field::addPlatform(platform* p) {
 	platforms->insertFirst(p);
 }
 
-void field::addHitbox(hitbox* h) {
-	hitboxes->insertFirst(h);
+void field::setPlayer1(character* c) {
+	p_1 = c;
 }
 
-void field::addCharacter(character* c) {
-	characters->insertFirst(c);
-	hitboxes->insertFirst(c->moves.aerial.hb);
-	hitboxes->insertFirst(c->moves.jab.hb);
-	hitboxes->insertFirst(c->moves.dash.hb);
-	hitboxes->insertFirst(c->moves.special.hb);
+void field::setPlayer2(character* c) {
+	p_2 = c;
+}
+
+character* field::getPlayer1() {
+	return p_1;
+}
+
+character* field::getPlayer2() {
+	return p_2;
+}
+
+void field::reset() {
+	//TODO:
 }
 
 void field::setBackground(const rectangle& b) {
@@ -32,71 +40,6 @@ void field::setBackground(const rectangle& b) {
 
 void field::setGravity(const vector& g) {
 	gravity = g;
-}
-
-
-//dont ask me how my code works, i actually dont know
-//"your code looks like song lyrics written using only the stuff that comes after the question mark in a url"
-bool field::collides(const obj& o, obj** p, int* dir, int* amt, int* type) {
-	bool collides = false;
-	bool calc_platform = p != NULL;
-	bool calc_dir = dir != NULL;
-	bool calc_amount = amt != NULL;
-	bool calc_type = type != NULL;
-	obj **temp_p = new obj*[platforms->length() + hitboxes->length() + characters->length()];
-	int *temp_d = new int[platforms->length() + hitboxes->length() + characters->length()];
-	int *temp_h = new int[platforms->length() + hitboxes->length() + characters->length()];
-	int amount = 0;
-	for (int i = 0; i < platforms->length(); i++) {
-		int *temp_dir = new int;
-		if (o.collidesWith(*platforms->get(i), nullptr, nullptr, temp_dir)) {
-			if(calc_platform)
-				temp_p[amount] = platforms->get(i);
-			if(calc_dir)
-				temp_d[amount] = *temp_dir;
-			if (calc_type)
-				temp_h[amount] = 0;
-			amount++;
-			collides = true;
-		}
-	}
-	for (int i = 0; i < hitboxes->length(); i++) {
-		int *temp_dir = new int;
-		if (o.collidesWith(*hitboxes->get(i), nullptr, nullptr, temp_dir)) {
-			if (calc_platform)
-				temp_p[amount] = hitboxes->get(i);
-			if (calc_dir)
-				temp_d[amount] = *temp_dir;
-			if (calc_type)
-				temp_h[amount] = 1;
-			amount++;
-			collides = true;
-		}
-	}
-	for (int i = 0; i < characters->length(); i++) {
-		int *temp_dir = new int;
-		if (o.collidesWith(*characters->get(i), nullptr, nullptr, temp_dir)) {
-			if (calc_platform)
-				temp_p[amount] = characters->get(i);
-			if (calc_dir)
-				temp_d[amount] = *temp_dir;
-			if (calc_type)
-				temp_h[amount] = 2;
-			amount++;
-			collides = true;
-		}
-	}
-	for (int i = 0; i < amount; i++) {
-		if(calc_platform)
-			p[i] = temp_p[i];
-		if(calc_dir)
-			dir[i] = temp_d[i];
-		if (calc_type)
-			type[i] = temp_h[i];
-	}
-	if (calc_amount)
-		*amt = amount;
-	return collides;
 }
 
 bool field::hitsPlatform(const obj& o, platform** p, int* dir, int* amt) {
@@ -142,60 +85,60 @@ bool field::hitsGround(const obj& o) {
 	return false;
 }
 
-bool field::isHit(const character& c, hitbox* hb) {
-	bool calc_hitbox = hb != NULL;
-	bool hit = false;
-	for (int i = 0; i < hitboxes->length(); i++) {
-		if (c.collidesWith(*hitboxes->get(i), nullptr, nullptr, nullptr) && !c.isOwnHitbox(hitboxes->get(i)) && hitboxes->get(i)->exists) {
-			if (calc_hitbox)
-				*hb = *hitboxes->get(i);
-			hit = true;
-			break;
-		}
-	}
-	return hit;
-}
-
 void field::update() {
-	for (int i = 0; i < characters->length(); i++) {
-		characters->get(i)->push(gravity);
-		
-		vector sum_move = { 0, 0 };
-		vector sum_push = { 0, 0 };
-		for (int j = 0; j < platforms->length(); j++) {
-			vector *normal = new vector(0, 0);
-			vector *move = new vector(0, 0);
-			int *dir = new int;
-			characters->get(i)->collidesWith(*platforms->get(j), normal, move, dir);
-			sum_move += *move;
-			sum_push += *normal;
-		}
-		characters->get(i)->push(sum_push);
-		characters->get(i)->move(sum_move);
-		characters->get(i)->update();
-		hitbox *temp_hb = new hitbox(0, 0, 0, 0, { 0, 0 });
-		if (isHit(*characters->get(i), temp_hb)) {
-			characters->get(i)->hit(temp_hb->stun, temp_hb->damage, temp_hb->knockback);
-			temp_hb->exists = false;
-			temp_hb->frame_counter = 0;
-		}
+
+	vector sum_move = { 0, 0 };
+	vector sum_push = { 0, 0 };
+	vector *normal = new vector(0, 0);
+	vector *move = new vector(0, 0);
+	int *dir = new int;
+
+	//player_1
+	p_1->push(gravity);
+	for (int j = 0; j < platforms->length(); j++) {
+		normal = new vector(0, 0);
+		move = new vector(0, 0);
+		dir = new int;
+		p_1->collidesWith(*platforms->get(j), normal, move, dir);
+		sum_move += *move;
+		sum_push += *normal;
 	}
-	for (int i = 0; i < hitboxes->length(); i++) {
-		hitboxes->get(i)->update();
+	p_1->push(sum_push);
+	p_1->move(sum_move);
+	p_1->update();
+	if (p_1->collidesWith(p_2->attack, nullptr, nullptr, nullptr) && p_2->attack.exists) {
+		p_1->hit(p_2);
+	}
+
+	sum_move = { 0, 0 };
+	sum_push = { 0, 0 };
+
+	//player_2
+	p_2->push(gravity);
+	for (int j = 0; j < platforms->length(); j++) {
+		normal = new vector(0, 0);
+		move = new vector(0, 0);
+		dir = new int;
+		p_2->collidesWith(*platforms->get(j), normal, move, dir);
+		sum_move += *move;
+		sum_push += *normal;
+	}
+	p_2->push(sum_push);
+	p_2->move(sum_move);
+	p_2->update();
+	if (p_2->collidesWith(p_1->attack, nullptr, nullptr, nullptr) && p_1->attack.exists) {
+		p_2->hit(p_1);
 	}
 }
 
 void field::draw(SDL_Renderer* renderer) {
 	background.draw(renderer);
-	for (int i = 0; i < characters->length(); i++) {
-		characters->get(i)->draw(renderer);
-	}
+	p_1->draw(renderer);
+	p_1->attack.draw(renderer);
+	p_2->draw(renderer);
+	p_2->attack.draw(renderer);
 	for (int i = 0; i < platforms->length(); i++) {
 		platforms->get(i)->draw(renderer);
-	}
-	for (int i = 0; i < hitboxes->length(); i++) {
-		if (hitboxes->get(i)->exists) 
-			hitboxes->get(i)->draw(renderer);
 	}
 }
 
